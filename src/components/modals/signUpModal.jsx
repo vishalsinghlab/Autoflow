@@ -112,7 +112,9 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
   };
 
   const handleGoogleLogin = async () => {
-    const res = await fetch("http://localhost:3100/api/v1/auth/google/url");
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/google/url`,
+    );
     const data = await res.json();
     window.location.href = data.url;
   };

@@ -3,7 +3,7 @@ import axios from "axios";
 import store from "@/store"; // make sure this points to your actual Redux store
 
 const baseInstance = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1`,
+  baseURL: `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1`,
   withCredentials: false,
   headers: {
     "Content-Type": "application/json",
@@ -30,7 +30,7 @@ baseInstance.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export default baseInstance;
