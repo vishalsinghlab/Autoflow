@@ -153,7 +153,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
               Create your account
             </h3>
 
-            <button
+            {/* <button
               onClick={handleGoogleLogin}
               className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 mb-4 hover:bg-gray-50 transition"
             >
@@ -161,13 +161,13 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
               <span className="text-sm font-medium text-gray-700">
                 Sign up with Google
               </span>
-            </button>
+            </button> */}
 
-            <div className="flex items-center mb-4">
+            {/* <div className="flex items-center mb-4">
               <div className="flex-grow h-px bg-gray-300" />
               <span className="px-2 text-sm text-gray-500">or</span>
               <div className="flex-grow h-px bg-gray-300" />
-            </div>
+            </div> */}
 
             <form className="space-y-4" onSubmit={handleSendOtp}>
               <input

@@ -95,6 +95,14 @@ export default function LoginModal({ showModal, onClose, onSignUpClick }) {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/google/url`,
+    );
+    const data = await res.json();
+    window.location.href = data.url;
+  };
+
   return (
     <AnimatePresence>
       {showModal && (
@@ -129,18 +137,21 @@ export default function LoginModal({ showModal, onClose, onSignUpClick }) {
               Login to your account
             </h3>
 
-            <button className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 mb-4 hover:bg-gray-50 transition">
+            {/* <button
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 mb-4 hover:bg-gray-50 transition"
+            >
               <Image src="/google.png" alt="Google" width={20} height={20} />
               <span className="text-sm font-medium text-gray-700">
                 Login with Google
               </span>
-            </button>
+            </button> */}
 
-            <div className="flex items-center mb-4">
+            {/* <div className="flex items-center mb-4">
               <div className="flex-grow h-px bg-gray-300" />
               <span className="px-2 text-sm text-gray-500">or</span>
               <div className="flex-grow h-px bg-gray-300" />
-            </div>
+            </div> */}
 
             <form
               onSubmit={otpSent ? handleVerifyOtp : handleSendOtp}

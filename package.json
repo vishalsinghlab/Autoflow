@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev -H 0.0.0.0 -p 3000 --turbopack",
+    "dev": "next dev -H 0.0.0.0 -p 3002 --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -41,12 +41,11 @@
     "openai": "^4.93.0",
     "puppeteer": "^24.6.1",
     "quill": "^2.0.3",
+    "radix-ui": "^1.4.3",
     "react": "^19.0.0",
-    "react-beautiful-dnd": "^13.1.1",
-    "react-day-picker": "^8.10.1",
+    "react-day-picker": "^9.14.0",
     "react-dom": "^19.0.0",
     "react-email-editor": "^1.7.11",
-    "react-quill": "^2.0.0",
     "react-redux": "^9.2.0",
     "reactflow": "^11.11.4",
     "recharts": "^2.15.3",

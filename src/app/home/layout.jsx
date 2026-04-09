@@ -110,7 +110,6 @@ export default function RootLayout({ children }) {
     }
   };
 
-
   return (
     <>
       <div className="flex h-screen bg-gray-50">
@@ -133,7 +132,7 @@ export default function RootLayout({ children }) {
         </div>
 
         {/* Desktop Sidebar */}
-        <div className="hidden md:flex md:w-64 md:flex-col">
+        <div className="hidden md:flex md:flex-col">
           <Sidebar />
         </div>
 
