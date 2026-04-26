@@ -436,27 +436,29 @@ export default function LandingPage() {
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
-            className="grid md:grid-cols-3 gap-8"
+            className="grid md:grid-cols-3 gap-8 items-stretch"
           >
             {features.map((feature, idx) => (
               <motion.div
                 key={idx}
                 variants={featureCardVariants}
                 whileHover="hover"
-                className="relative group"
+                className="relative group h-full"
               >
                 <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl blur-xl" />
-                <div className="relative bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300">
+                <div className="relative bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 h-full flex flex-col">
                   <div
-                    className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
+                    className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform flex-shrink-0`}
                   >
                     <feature.icon className="w-8 h-8 text-white" />
                   </div>
                   <div className="absolute top-4 right-4 text-5xl font-bold text-gray-100">
                     {feature.step}
                   </div>
-                  <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <h3 className="text-2xl font-bold mb-3 flex-shrink-0">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed flex-1">
                     {feature.description}
                   </p>
                 </div>
