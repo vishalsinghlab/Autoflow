@@ -12,6 +12,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { Save, Eye, Trash2, FileText, Mail, Type } from "lucide-react";
 
 export default function EmailEditorPage() {
   const [name, setName] = useState("");
@@ -20,8 +21,8 @@ export default function EmailEditorPage() {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState(null);
   const [editorLoaded, setEditorLoaded] = useState(false);
-  const quillRef = useRef(null); // Reference to the editor container
-  const quillInstance = useRef(null); // Reference to the Quill editor instance
+  const quillRef = useRef(null);
+  const quillInstance = useRef(null);
   const [QuillModule, setQuillModule] = useState(null);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function EmailEditorPage() {
   useEffect(() => {
     const loadQuill = async () => {
       const Quill = (await import("quill")).default;
-      setQuillModule(() => Quill); // Save the module
+      setQuillModule(() => Quill);
     };
     loadQuill();
   }, []);
@@ -147,107 +148,160 @@ export default function EmailEditorPage() {
   };
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-r from-purple-300  to-purple-500 rounded-xl shadow-lg">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex flex-col">
-          <label className="text-white mb-2">Template Name</label>
-          <Input
-            placeholder="Template Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Email Template Editor
+          </h1>
+          <p className="text-gray-500 mt-2">
+            Create and manage your email templates with ease
+          </p>
         </div>
 
-        <div className="flex flex-col">
-          <label className="text-white mb-2">Subject</label>
-          <Input
-            placeholder="Subject"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
+        {/* Main Card */}
+        <div className="bg-white rounded-2xl shadow-xl shadow-purple-100/50 border border-gray-100 overflow-hidden">
+          {/* Form Section */}
+          <div className="p-6 bg-gradient-to-r from-purple-50 via-white to-pink-50 border-b border-gray-100">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <FileText className="w-4 h-4 text-purple-600" />
+                  Template Name
+                </label>
+                <Input
+                  placeholder="Enter template name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="border-gray-200 focus:border-purple-400 focus:ring-purple-400 transition-all"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <Mail className="w-4 h-4 text-pink-600" />
+                  Subject
+                </label>
+                <Input
+                  placeholder="Enter email subject"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="border-gray-200 focus:border-purple-400 focus:ring-purple-400 transition-all"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <FileText className="w-4 h-4 text-blue-600" />
+                  Select Template
+                </label>
+                <Select
+                  onValueChange={(value) => loadTemplate(value)}
+                  value={selectedTemplateId || ""}
+                >
+                  <SelectTrigger className="border-gray-200 focus:border-purple-400 focus:ring-purple-400">
+                    <SelectValue placeholder="Select Existing Template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="default">
+                      Select Existing Template
+                    </SelectItem>
+                    {templates?.map((tpl) => (
+                      <SelectItem key={tpl.id} value={tpl.id}>
+                        {tpl.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <Type className="w-4 h-4 text-green-600" />
+                  Insert Placeholder
+                </label>
+                <Select onValueChange={(value) => insertPlaceholder(value)}>
+                  <SelectTrigger className="border-gray-200 focus:border-purple-400 focus:ring-purple-400">
+                    <SelectValue placeholder="Choose placeholder" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="name">Name</SelectItem>
+                    <SelectItem value="company">Company</SelectItem>
+                    <SelectItem value="designation">Designation</SelectItem>
+                    <SelectItem value="city">City</SelectItem>
+                    <SelectItem value="state">State</SelectItem>
+                    <SelectItem value="country">Country</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Editor Section */}
+          <div className="p-6">
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-purple-600" />
+                Email Content
+              </h2>
+            </div>
+            <div
+              className="border-2 border-gray-100 overflow-hidden bg-white shadow-inner"
+              style={{ minHeight: "400px" }}
+              ref={quillRef}
+            ></div>
+          </div>
+
+          {/* Actions Section */}
+          <div className="p-6 bg-gray-50 border-t border-gray-100">
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={saveTemplate}
+                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg shadow-purple-200 transition-all duration-200"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Save Template
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={exportHtml}
+                className="bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white shadow-lg shadow-pink-200 transition-all duration-200"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                Preview Template
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={deleteTemplate}
+                disabled={!selectedTemplateId}
+                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Template
+              </Button>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col">
-          <label className="text-white mb-2">Select Template</label>
-          <Select
-            onValueChange={(value) => loadTemplate(value)}
-            value={selectedTemplateId || ""}
-          >
-            <SelectTrigger className="w-full md:w-[300px]">
-              <SelectValue placeholder="Select Existing Template" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="default">Select Existing Template</SelectItem>
-              {templates?.map((tpl) => (
-                <SelectItem key={tpl.id} value={tpl.id}>
-                  {tpl.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col">
-          <label htmlFor="placeholder" className="font-medium text-white mb-2">
-            Insert Placeholder
-          </label>
-          <Select onValueChange={(value) => insertPlaceholder(value)}>
-            <SelectTrigger className="w-full md:w-[200px]">
-              <SelectValue placeholder="Placeholder" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="name">Name</SelectItem>
-              <SelectItem value="company">Company</SelectItem>
-              <SelectItem value="designation">Designation</SelectItem>
-              <SelectItem value="city">City</SelectItem>
-              <SelectItem value="state">State</SelectItem>
-              <SelectItem value="country">Country</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Preview Section */}
+        {htmlOutput && (
+          <div className="mt-8 bg-white rounded-2xl shadow-xl shadow-purple-100/50 border border-gray-100 overflow-hidden">
+            <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-100">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Eye className="w-5 h-5 text-purple-600" />
+                Live Preview
+              </h2>
+            </div>
+            <div className="p-6">
+              <div
+                className="border-2 border-gray-100 rounded-xl p-6 bg-gray-50"
+                dangerouslySetInnerHTML={{ __html: htmlOutput }}
+              />
+            </div>
+          </div>
+        )}
       </div>
-
-      <div
-        className="border rounded-lg shadow-lg bg-white overflow-hidden"
-        style={{ height: "300px" }}
-        ref={quillRef}
-      ></div>
-
-      <div className="flex gap-4 mt-4">
-        <Button
-          onClick={saveTemplate}
-          className="bg-purple-600 text-white hover:bg-purple-700 focus:ring-2 focus:ring-purple-500"
-        >
-          Save Template
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={exportHtml}
-          className="bg-pink-600 text-white hover:bg-pink-700 focus:ring-2 focus:ring-pink-500"
-        >
-          Preview Template
-        </Button>
-        <Button
-          variant="destructive"
-          onClick={deleteTemplate}
-          disabled={!selectedTemplateId}
-          className="bg-red-600 text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500"
-        >
-          Delete Template
-        </Button>
-      </div>
-
-      {htmlOutput && (
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2 text-white">Preview</h2>
-          <div
-            className="border p-4 rounded-lg bg-white"
-            dangerouslySetInnerHTML={{ __html: htmlOutput }}
-          />
-        </div>
-      )}
     </div>
   );
 }

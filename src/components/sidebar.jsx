@@ -95,7 +95,7 @@ export default function Sidebar() {
       href: "/home/contacts-source",
       icon: Contact,
       label: "Enrichment",
-      badge: "New",
+      badge: null
     },
     {
       href: "/home/campaign",
@@ -109,7 +109,7 @@ export default function Sidebar() {
       label: "Templates",
       badge: null,
     },
-    { href: "/home/stats", icon: ChartBar, label: "Analytics", badge: "Beta" },
+    { href: "/home/stats", icon: ChartBar, label: "Analytics", badge: null },
     { href: "/home/workflow", icon: Workflow, label: "Workflows", badge: null },
   ];
 

@@ -7,6 +7,18 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { setUser } from "../../store/userSlice";
+import { 
+  Mail, 
+  User, 
+  Key, 
+  ArrowRight, 
+  Shield, 
+  CheckCircle2,
+  Sparkles,
+  X,
+  RefreshCw,
+  LogIn
+} from "lucide-react";
 
 const Spinner = () => (
   <svg
@@ -111,20 +123,14 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/auth/google/url`,
-    );
-    const data = await res.json();
-    window.location.href = data.url;
-  };
+  const inputClasses = "w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all text-gray-700 placeholder-gray-400 bg-gray-50 hover:bg-white";
 
   return (
     <AnimatePresence>
       {showModal && (
         <motion.div
           onClick={handleBackdropClick}
-          className="fixed inset-0 bg-[rgba(0,0,0,0.3)] flex items-center justify-center z-50"
+          className="fixed inset-0 bg-gradient-to-br from-black/40 via-black/30 to-purple-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -132,128 +138,207 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            className="h-full bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{
               opacity: 0,
               scale: 0.95,
-              transition: { duration: 0.5, ease: "easeInOut", delay: 0.1 },
+              y: 20,
+              transition: { duration: 0.3, ease: "easeInOut" },
             }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
+           
+            
+            {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-all z-10 cursor-pointer"
             >
-              ✕
+              <X className="w-4 h-4" />
             </button>
 
-            <h3 className="text-2xl font-bold mb-4 text-center text-purple-700">
-              Create your account
-            </h3>
+            {/* Header */}
+            <div className="p-8 pb-4">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-200">
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-center text-gray-800 mb-1">
+                Create your account
+              </h3>
+              <p className="text-center text-gray-500 text-sm mb-6">
+                Start your journey with us today
+              </p>
 
-            {/* <button
-              onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 mb-4 hover:bg-gray-50 transition"
-            >
-              <Image src="/google.png" alt="Google" width={20} height={20} />
-              <span className="text-sm font-medium text-gray-700">
-                Sign up with Google
-              </span>
-            </button> */}
+              {/* Steps indicator */}
+              <div className="flex items-center justify-center gap-2 mb-8">
+                <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  !otpSent 
+                    ? 'bg-purple-100 text-purple-700' 
+                    : 'bg-green-100 text-green-700'
+                }`}>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  {otpSent ? 'Details' : 'Enter Details'}
+                </div>
+                <div className="w-8 h-0.5 bg-gray-200" />
+                <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  otpSent 
+                    ? 'bg-purple-100 text-purple-700' 
+                    : 'bg-gray-100 text-gray-400'
+                }`}>
+                  <Shield className="w-3.5 h-3.5" />
+                  Verify OTP
+                </div>
+              </div>
+            </div>
 
-            {/* <div className="flex items-center mb-4">
-              <div className="flex-grow h-px bg-gray-300" />
-              <span className="px-2 text-sm text-gray-500">or</span>
-              <div className="flex-grow h-px bg-gray-300" />
-            </div> */}
+            {/* Form */}
+            <div className="px-8 pb-8">
+              <form className="space-y-4" onSubmit={handleSendOtp}>
+                {/* Username field */}
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    className={inputClasses}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </div>
 
-            <form className="space-y-4" onSubmit={handleSendOtp}>
-              <input
-                type="text"
-                placeholder="Username"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-purple-300"
-                onChange={(e) => setUsername(e.target.value)}
-              />
+                {/* Email field */}
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    value={email}
+                    className={inputClasses}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
 
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-purple-300"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-
-              {otpSent && (
-                <input
-                  type="text"
-                  placeholder="Enter OTP"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-purple-300"
-                  onChange={(e) => setOtp(e.target.value)}
-                />
-              )}
-
-              {!otpSent ? (
-                <button
-                  type="button"
-                  onClick={handleSendOtp}
-                  className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
-                  disabled={loadingSendOtp}
-                >
-                  {loadingSendOtp ? (
-                    <>
-                      <Spinner /> Sending...
-                    </>
-                  ) : (
-                    "Send OTP"
+                {/* OTP field with animation */}
+                <AnimatePresence>
+                  {otpSent && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                      animate={{ opacity: 1, height: 'auto', marginBottom: 16 }}
+                      exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="relative">
+                        <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Enter OTP code"
+                          value={otp}
+                          className={inputClasses}
+                          onChange={(e) => setOtp(e.target.value)}
+                          maxLength={6}
+                        />
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          <Shield className="w-5 h-5 text-purple-400" />
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-2 text-center">
+                        Enter the 6-digit code sent to your email
+                      </p>
+                    </motion.div>
                   )}
-                </button>
-              ) : (
-                <>
-                  <button
-                    onClick={handleVerifyOtp}
-                    type="submit"
-                    className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
-                    disabled={loadingVerifyOtp}
-                  >
-                    {loadingVerifyOtp ? (
-                      <>
-                        <Spinner /> Creating Account...
-                      </>
-                    ) : (
-                      "Create Account"
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSendOtp}
-                    className="text-sm text-purple-600 hover:underline mt-1 disabled:opacity-50 flex items-center gap-2"
-                    disabled={loadingSendOtp}
-                  >
-                    {loadingSendOtp ? (
-                      <>
-                        <Spinner /> Resending...
-                      </>
-                    ) : (
-                      "Resend OTP"
-                    )}
-                  </button>
-                </>
-              )}
-            </form>
+                </AnimatePresence>
 
-            <p className="text-center text-sm mt-6 text-gray-600">
-              Already have an account?{" "}
-              <button
-                onClick={() => {
-                  onClose();
-                  onLoginClick();
-                }}
-                className="text-purple-700 font-semibold hover:underline"
-              >
-                Login
-              </button>
-            </p>
+                {/* Action buttons */}
+                <div className="space-y-3 pt-2">
+                  {!otpSent ? (
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2 font-medium shadow-lg shadow-purple-200 hover:shadow-xl hover:shadow-purple-300 transform hover:-translate-y-0.5"
+                      disabled={loadingSendOtp}
+                    >
+                      {loadingSendOtp ? (
+                        <>
+                          <Spinner /> Sending OTP...
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="w-5 h-5" />
+                          Send OTP
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={handleVerifyOtp}
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2 font-medium shadow-lg shadow-purple-200 hover:shadow-xl hover:shadow-purple-300 transform hover:-translate-y-0.5"
+                        disabled={loadingVerifyOtp}
+                      >
+                        {loadingVerifyOtp ? (
+                          <>
+                            <Spinner /> Creating Account...
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 className="w-5 h-5" />
+                            Create Account
+                          </>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSendOtp}
+                        className="w-full text-purple-600 hover:text-purple-700 py-2.5 rounded-xl border-2 border-purple-200 hover:border-purple-300 hover:bg-purple-50 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm font-medium"
+                        disabled={loadingSendOtp}
+                      >
+                        {loadingSendOtp ? (
+                          <>
+                            <Spinner /> Resending...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="w-4 h-4" />
+                            Resend OTP
+                          </>
+                        )}
+                      </button>
+                    </>
+                  )}
+                </div>
+              </form>
+
+              {/* Footer */}
+              <div className="mt-8 text-center">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="px-4 bg-white text-sm text-gray-400">
+                      Already have an account?
+                    </span>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={() => {
+                    onClose();
+                    onLoginClick();
+                  }}
+                  className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl border-2 border-gray-200 hover:border-purple-200 text-gray-700 hover:text-purple-700 transition-all font-medium group"
+                >
+                  <LogIn className="w-5 h-5 group-hover:text-purple-600 transition-colors" />
+                  Sign in to your account
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       )}
