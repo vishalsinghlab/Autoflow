@@ -364,11 +364,6 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="inline-flex items-center space-x-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Sparkles className="w-4 h-4" />
-              <span>AI-Powered Automation Platform</span>
-            </div>
-
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 bg-clip-text text-transparent">
               Supercharge Your
               <br />
@@ -387,12 +382,6 @@ export default function LandingPage() {
               >
                 <span>Start Free Trial</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button
-                onClick={() => navigateTo("#features")}
-                className="border-2 border-purple-600 text-purple-600 px-8 py-3 rounded-full font-semibold hover:bg-purple-50 transition-all duration-300"
-              >
-                Watch Demo
               </button>
             </div>
 
@@ -628,12 +617,6 @@ export default function LandingPage() {
               >
                 Start Your 14-Day Free Trial
               </button>
-              <button
-                onClick={() => navigateTo("#features")}
-                className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-purple-600 transition-all duration-300"
-              >
-                Schedule a Demo
-              </button>
             </div>
             <p className="text-sm mt-6 opacity-80">
               No credit card required. Cancel anytime.
@@ -674,14 +657,6 @@ export default function LandingPage() {
                     Pricing
                   </button>
                 </li>
-                <li>
-                  <button className="hover:text-white transition">API</button>
-                </li>
-                <li>
-                  <button className="hover:text-white transition">
-                    Integrations
-                  </button>
-                </li>
               </ul>
             </div>
             <div>
@@ -689,14 +664,6 @@ export default function LandingPage() {
               <ul className="space-y-2 text-sm">
                 <li>
                   <button className="hover:text-white transition">About</button>
-                </li>
-                <li>
-                  <button className="hover:text-white transition">Blog</button>
-                </li>
-                <li>
-                  <button className="hover:text-white transition">
-                    Careers
-                  </button>
                 </li>
                 <li>
                   <button className="hover:text-white transition">
@@ -715,11 +682,6 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <button className="hover:text-white transition">Terms</button>
-                </li>
-                <li>
-                  <button className="hover:text-white transition">
-                    Security
-                  </button>
                 </li>
               </ul>
             </div>
