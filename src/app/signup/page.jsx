@@ -1,23 +1,22 @@
 "use client";
-
 import axiosInstance from "@/lib/axiosInstance";
-import { setUsersList, setUser } from "@/store/userSlice";
 import { HttpStatusCode } from "axios";
-import { useEffect, useState, useCallback, useRef } from "react";
-import { toast } from "sonner";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { setUser } from "../../store/userSlice";
 import {
   Mail,
+  User,
   Key,
+  ArrowRight,
   Shield,
   CheckCircle2,
-  RefreshCw,
-  LogIn,
-  ArrowRight,
-  User,
   Zap,
   ArrowLeft,
+  RefreshCw,
+  LogIn,
 } from "lucide-react";
 
 const Spinner = () => (
@@ -43,19 +42,20 @@ const Spinner = () => (
   </svg>
 );
 
-export default function LoginPage() {
-  const dispatch = useDispatch();
-  const router = useRouter();
-
-  // State
+export default function SignUpPage() {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0);
+  const [loadingSendOtp, setLoadingSendOtp] = useState(false);
+  const [loadingVerifyOtp, setLoadingVerifyOtp] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
-  // Refs
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const usernameInputRef = useRef(null);
   const emailInputRef = useRef(null);
   const otpInputRef = useRef(null);
 
@@ -68,9 +68,9 @@ export default function LoginPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Focus email input on mount
+  // Focus username on mount
   useEffect(() => {
-    setTimeout(() => emailInputRef.current?.focus(), 100);
+    setTimeout(() => usernameInputRef.current?.focus(), 100);
   }, []);
 
   // Resend cooldown timer
@@ -87,142 +87,111 @@ export default function LoginPage() {
   const inputClasses =
     "w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all text-gray-700 placeholder-gray-400 bg-gray-50 hover:bg-white";
 
-  // Send OTP handler
-  const handleSendOtp = useCallback(
-    async (e) => {
-      e.preventDefault();
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
 
-      if (!email) {
-        toast.error("Email address?");
-        emailInputRef.current?.focus();
-        return;
+    if (!username) {
+      toast.error("What should we call you?");
+      usernameInputRef.current?.focus();
+      return;
+    }
+
+    if (username.length < 3) {
+      toast.error("Username needs at least 3 characters");
+      usernameInputRef.current?.focus();
+      return;
+    }
+
+    if (!email) {
+      toast.error("We'll need your email");
+      emailInputRef.current?.focus();
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("That email doesn't look right");
+      emailInputRef.current?.focus();
+      return;
+    }
+
+    setLoadingSendOtp(true);
+    try {
+      const response = await axiosInstance.post("/auth/send-otp", {
+        username,
+        email,
+      });
+
+      if (response.status === HttpStatusCode.Ok && response.data.success) {
+        toast.success("Code sent! Check your email");
+        setOtpSent(true);
+        setResendCooldown(60);
+        setTimeout(() => otpInputRef.current?.focus(), 100);
       }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.error || "Something went wrong");
+    } finally {
+      setLoadingSendOtp(false);
+    }
+  };
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        toast.error("That doesn't look like a real email");
-        emailInputRef.current?.focus();
-        return;
-      }
-
-      setLoading(true);
-
-      try {
-        const response = await axiosInstance.post("/auth/send-otp", { email });
-
-        if (response.status === HttpStatusCode.Ok && response.data.success) {
-          toast.success("Check your inbox!");
-          setOtpSent(true);
-          setResendCooldown(60);
-          setTimeout(() => otpInputRef.current?.focus(), 100);
-        } else {
-          toast.error(response.data.message || "Something went wrong");
-        }
-      } catch (error) {
-        console.error("Send OTP error:", error);
-        const errorMessage =
-          error.response?.data?.error ||
-          error.response?.data?.message ||
-          "Failed to send. Try again?";
-        toast.error(errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [email],
-  );
-
-  // Resend OTP handler
-  const handleResendOtp = useCallback(async () => {
+  const handleResendOtp = async () => {
     if (resendCooldown > 0) return;
 
-    setLoading(true);
-
+    setLoadingSendOtp(true);
     try {
-      const response = await axiosInstance.post("/auth/send-otp", { email });
+      const response = await axiosInstance.post("/auth/send-otp", {
+        username,
+        email,
+      });
 
       if (response.status === HttpStatusCode.Ok && response.data.success) {
         toast.success("Another code sent");
         setResendCooldown(60);
-      } else {
-        toast.error(response.data.message || "Try again");
       }
     } catch (error) {
-      console.error("Resend OTP error:", error);
-      toast.error(error.response?.data?.error || "Failed to resend");
+      console.log(error);
+      toast.error(error.response?.data?.error || "Try again");
     } finally {
-      setLoading(false);
+      setLoadingSendOtp(false);
     }
-  }, [email, resendCooldown]);
+  };
 
-  // Verify OTP handler
-  const handleVerifyOtp = useCallback(
-    async (e) => {
-      e.preventDefault();
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
 
-      if (!otp || otp.length !== 6) {
-        toast.error("Need that 6-digit code");
-        otpInputRef.current?.focus();
-        return;
+    if (!otp || otp.length !== 6) {
+      toast.error("Need that 6-digit code");
+      otpInputRef.current?.focus();
+      return;
+    }
+
+    setLoadingVerifyOtp(true);
+    try {
+      const response = await axiosInstance.post("/auth/verify-otp", {
+        otp,
+        email,
+        username,
+      });
+
+      if (response.status === HttpStatusCode.Ok && response.data.success) {
+        const { token, role } = response.data;
+        localStorage?.setItem("token", token);
+        localStorage?.setItem("username", username);
+        localStorage?.setItem("email", email);
+        localStorage?.setItem("role", role);
+        dispatch(setUser({ email, role, username, isLoggedIn: true }));
+        toast.success("Welcome aboard!");
+        router.push("/home/data-source");
       }
-
-      setLoading(true);
-
-      try {
-        const response = await axiosInstance.post("/auth/verify-otp", {
-          otp,
-          email,
-        });
-
-        if (response.status === HttpStatusCode.Ok && response.data.success) {
-          const { token, username, email: userEmail, role } = response.data;
-
-          toast.success("You're in!");
-
-          // Store auth data
-          localStorage.setItem("token", token);
-          localStorage.setItem("username", username);
-          localStorage.setItem("email", userEmail);
-          localStorage.setItem("role", role);
-
-          // Update Redux state
-          dispatch(
-            setUser({
-              email: userEmail,
-              role,
-              username,
-              isLoggedIn: true,
-            }),
-          );
-
-          // Fetch users list
-          try {
-            const usersResponse = await axiosInstance.get("/auth/all-users");
-            if (usersResponse.data.users) {
-              dispatch(setUsersList(usersResponse.data.users));
-            }
-          } catch (error) {
-            console.error("Failed to fetch users:", error);
-          }
-
-          // Redirect to dashboard
-          router.push("/home/data-source");
-        } else {
-          toast.error(response.data.message || "Wrong code. Try again?");
-        }
-      } catch (error) {
-        console.error("Verify OTP error:", error);
-        const errorMessage =
-          error.response?.data?.error ||
-          error.response?.data?.message ||
-          "Verification failed";
-        toast.error(errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [otp, email, dispatch, router],
-  );
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.error || "Wrong code? Try again");
+    } finally {
+      setLoadingVerifyOtp(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
@@ -249,7 +218,7 @@ export default function LoginPage() {
               className="flex items-center space-x-2 text-gray-500 hover:text-purple-600 transition-colors text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to home</span>
+              <span>Back</span>
             </button>
           </div>
         </div>
@@ -258,20 +227,20 @@ export default function LoginPage() {
       {/* Main content */}
       <div className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md mx-auto">
-          {/* Logo card - simpler */}
+          {/* Header - simpler */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-lg mb-4">
-              <LogIn className="w-8 h-8 text-white" />
+              <User className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Sign in</h1>
-            <p className="text-gray-500 text-sm">
-              We'll email you a code to verify
-            </p>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              Join AutoFlow
+            </h1>
+            <p className="text-gray-500 text-sm">Takes about a minute</p>
           </div>
 
           {/* Main form card */}
           <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-            {/* Steps indicator - more subtle */}
+            {/* Steps indicator - subtle */}
             <div className="flex items-center justify-between mb-8">
               <div className="flex-1">
                 <div
@@ -286,7 +255,7 @@ export default function LoginPage() {
                     !otpSent ? "text-gray-800 font-medium" : "text-gray-500"
                   }`}
                 >
-                  Your email
+                  Your info
                 </div>
                 {!otpSent && (
                   <div className="w-full h-0.5 bg-purple-200 mt-2 rounded-full">
@@ -321,6 +290,20 @@ export default function LoginPage() {
             </div>
 
             <form className="space-y-5">
+              {/* Username field */}
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  ref={usernameInputRef}
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  className={inputClasses}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={otpSent || loadingSendOtp}
+                />
+              </div>
+
               {/* Email field */}
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -331,7 +314,7 @@ export default function LoginPage() {
                   value={email}
                   className={inputClasses}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={otpSent || loading}
+                  disabled={otpSent || loadingSendOtp}
                 />
               </div>
 
@@ -357,7 +340,7 @@ export default function LoginPage() {
                     />
                   </div>
                   <p className="text-xs text-gray-400">
-                    Check your email - it might take a minute
+                    Check your email - might take a minute
                   </p>
                 </div>
               )}
@@ -369,9 +352,9 @@ export default function LoginPage() {
                     type="button"
                     onClick={handleSendOtp}
                     className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2 font-medium shadow-md"
-                    disabled={loading}
+                    disabled={loadingSendOtp}
                   >
-                    {loading ? (
+                    {loadingSendOtp ? (
                       <>
                         <Spinner /> Sending...
                       </>
@@ -388,16 +371,16 @@ export default function LoginPage() {
                       onClick={handleVerifyOtp}
                       type="submit"
                       className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2 font-medium shadow-md"
-                      disabled={loading}
+                      disabled={loadingVerifyOtp}
                     >
-                      {loading ? (
+                      {loadingVerifyOtp ? (
                         <>
-                          <Spinner /> Checking...
+                          <Spinner /> Creating...
                         </>
                       ) : (
                         <>
                           <CheckCircle2 className="w-5 h-5" />
-                          Sign in
+                          Create account
                         </>
                       )}
                     </button>
@@ -405,7 +388,7 @@ export default function LoginPage() {
                       type="button"
                       onClick={handleResendOtp}
                       className="w-full text-purple-600 hover:text-purple-700 py-2.5 rounded-xl border-2 border-purple-200 hover:border-purple-300 hover:bg-purple-50 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm font-medium"
-                      disabled={resendCooldown > 0 || loading}
+                      disabled={resendCooldown > 0 || loadingSendOtp}
                     >
                       {resendCooldown > 0 ? (
                         <>
@@ -431,24 +414,24 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center">
                 <span className="px-4 bg-white text-sm text-gray-400">
-                  New here?
+                  Already with us?
                 </span>
               </div>
             </div>
 
-            {/* Sign up button */}
+            {/* Sign in button */}
             <button
-              onClick={() => router.push("/signup")}
+              onClick={() => router.push("/login")}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl border-2 border-gray-200 hover:border-purple-200 text-gray-700 hover:text-purple-700 transition-all font-medium group"
             >
-              <User className="w-5 h-5 group-hover:text-purple-600 transition-colors" />
-              Create an account
+              <LogIn className="w-5 h-5 group-hover:text-purple-600 transition-colors" />
+              Sign in instead
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
 
-            {/* Demo hint - subtle and human */}
+            {/* Friendly note */}
             <p className="text-center text-xs text-gray-400 mt-6">
-              No account needed? Just sign in and we'll create one
+              We'll send a verification code to your email. No spam, promise.
             </p>
           </div>
         </div>

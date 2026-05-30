@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,12 +10,7 @@ import {
   Database,
   Users,
   Mail,
-  ChevronRight,
   LogOut,
-  LayoutDashboard,
-  Sparkles,
-  Shield,
-  TrendingUp,
   Star,
   Quote,
   ArrowRight,
@@ -27,11 +22,11 @@ import axiosInstance from "@/lib/axiosInstance";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUser, setUsersList } from "../../src/store/userSlice";
 
-// Animation variants - made less perfect
+// Animation variants
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+  transition: { duration: 0.6 },
 };
 
 const staggerContainer = {
@@ -41,7 +36,7 @@ const staggerContainer = {
 const featureCardVariants = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  hover: { y: -4, transition: { duration: 0.2 } }, // Reduced movement
+  hover: { y: -8, transition: { duration: 0.3 } },
 };
 
 export default function LandingPage() {
@@ -49,22 +44,14 @@ export default function LandingPage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [hoveredFeature, setHoveredFeature] = useState(null);
   const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // Handle scroll effect for navbar - added slight delay for realism
+  // Handle scroll effect for navbar
   useEffect(() => {
-    let ticking = false;
     const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 20);
-          ticking = false;
-        });
-        ticking = true;
-      }
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -74,6 +61,7 @@ export default function LandingPage() {
     if (typeof window !== "undefined") {
       const token = localStorage?.getItem("token");
       if (!token) {
+        // Don't auto-show modal, let user interact first
         return;
       } else {
         axiosInstance
@@ -81,9 +69,7 @@ export default function LandingPage() {
           .then((res) => {
             dispatch(setUsersList(res.data.users));
           })
-          .catch(() => {
-            // Silent fail - real apps have errors
-          });
+          .catch(console.error);
       }
     }
   }, [dispatch]);
@@ -107,7 +93,7 @@ export default function LandingPage() {
       if (url.startsWith("#")) {
         const element = document.querySelector(url);
         if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "start" });
+          element.scrollIntoView({ behavior: "smooth" });
         }
       } else {
         router.push(url);
@@ -117,60 +103,62 @@ export default function LandingPage() {
     [router],
   );
 
-  // Slightly less polished nav items
   const navItems = [
     { name: "Dashboard", href: "/home/data-source", requireAuth: true },
     { name: "Features", href: "#features", requireAuth: false },
-    { name: "Customers", href: "#testimonials", requireAuth: false }, // Changed from Testimonials
+    { name: "Testimonials", href: "#testimonials", requireAuth: false },
     { name: "Pricing", href: "#pricing", requireAuth: false },
   ];
 
   const features = [
     {
       icon: Database,
-      title: "Connect your data",
-      description: "Import from spreadsheets, LinkedIn, CrunchBase, and more",
+      title: "Connect Your Data Source",
+      description:
+        "Import leads from spreadsheets, NASDAQ, LinkedIn, CrunchBase, and Y Combinator",
       step: "01",
       color: "from-blue-500 to-cyan-500",
     },
     {
       icon: Users,
-      title: "Enrich automatically",
-      description: "Get exec details, funding info, and contact emails",
+      title: "Enrich Company Data",
+      description:
+        "Automatically fetch executive details, funding info, contact emails and phone numbers",
       step: "02",
       color: "from-purple-500 to-pink-500",
     },
     {
       icon: Mail,
-      title: "Set it and forget it",
-      description: "Smart campaigns with email and voice, plus follow-ups",
+      title: "Outreach on Autopilot",
+      description:
+        "Create smart campaigns with Emails and Voice Drops, schedule follow-ups, and let automation handle the rest",
       step: "03",
       color: "from-orange-500 to-red-500",
     },
   ];
 
-  // More realistic testimonials with varied ratings
   const testimonials = [
     {
       quote:
-        "Finally something that actually works. Booked 3x more demos in a week.",
+        "Within a week, we booked 3x more demos just by automating our lead workflow. This tool is a game-changer.",
       author: "Sasha V.",
-      role: "Head of Growth, BetaTech",
+      role: "Head of Growth at BetaTech",
       rating: 5,
       avatar: "SV",
     },
     {
-      quote: "Saved us hundreds of hours. Sales team thinks I'm a wizard.",
+      quote:
+        "The data enrichment feature saved us hundreds of hours of manual research. Absolutely essential for any B2B sales team.",
       author: "Michael C.",
-      role: "Sales Director, TechFlow",
+      role: "Sales Director at TechFlow",
       rating: 5,
       avatar: "MC",
     },
     {
       quote:
-        "Honestly surprised by how intuitive it is. Best tool we've bought this year.",
+        "Best investment we made this year. The automation workflows are incredibly intuitive and powerful.",
       author: "Elena R.",
-      role: "CEO, StartUpScale",
+      role: "CEO at StartUpScale",
       rating: 5,
       avatar: "ER",
     },
@@ -180,16 +168,21 @@ export default function LandingPage() {
     {
       name: "Starter",
       price: "$49",
-      description: "For small teams just getting started",
-      features: ["1,000 leads/month", "Basic enrichment", "Email campaigns"],
+      description: "Perfect for small teams",
+      features: [
+        "Up to 1,000 leads/month",
+        "Basic enrichment",
+        "Email campaigns",
+        "Analytics dashboard",
+      ],
       recommended: false,
     },
     {
       name: "Professional",
       price: "$99",
-      description: "What most of our customers use",
+      description: "Best for growing companies",
       features: [
-        "5,000 leads/month",
+        "Up to 5,000 leads/month",
         "Advanced enrichment",
         "Voice drops",
         "API access",
@@ -200,10 +193,10 @@ export default function LandingPage() {
     {
       name: "Enterprise",
       price: "Custom",
-      description: "When you need the big guns",
+      description: "For large organizations",
       features: [
         "Unlimited leads",
-        "Custom everything",
+        "Custom integrations",
         "Dedicated account manager",
         "SLA guarantee",
       ],
@@ -213,67 +206,78 @@ export default function LandingPage() {
 
   return (
     <div className="bg-gradient-to-b from-gray-50 to-white text-gray-900 font-sans overflow-x-hidden">
-      {/* Navbar - slightly less polished */}
+      {/* Navbar */}
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-md"
+            ? "bg-white/90 backdrop-blur-md shadow-lg"
             : "bg-white shadow-sm"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo - removed some animations */}
-            <div
-              className="flex items-center space-x-2 cursor-pointer"
+            {/* Logo */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center space-x-2 cursor-pointer group"
               onClick={() => navigateTo("/")}
             >
-              <Zap className="w-8 h-8 text-purple-600" />
+              <Zap className="w-8 h-8 text-purple-600 group-hover:rotate-12 transition-transform" />
               <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 AutoFlow
               </span>
-            </div>
+            </motion.div>
 
-            {/* Desktop Navigation - simpler */}
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               {navItems.map((item, idx) => (
-                <button
+                <motion.button
                   key={idx}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
                   onClick={() => navigateTo(item.href, item.requireAuth)}
                   className="text-gray-600 hover:text-purple-600 transition-colors font-medium relative group"
                 >
                   {item.name}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-600 group-hover:w-full transition-all duration-300" />
-                </button>
+                </motion.button>
               ))}
 
               {!isLoggedIn ? (
-                <div className="flex items-center space-x-4">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex items-center space-x-4"
+                >
                   <button
                     onClick={() => setShowLoginModal(true)}
                     className="text-gray-600 hover:text-purple-600 transition-colors"
                   >
-                    Sign in
+                    Sign In
                   </button>
                   <button
                     onClick={() => setShowSignUpModal(true)}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-full text-sm font-medium hover:shadow-md transition-all duration-300"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-full text-sm font-medium hover:shadow-lg hover:scale-105 transition-all duration-300"
                   >
-                    Start free
+                    Get Started
                   </button>
-                </div>
+                </motion.div>
               ) : (
-                <button
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
                   onClick={logout}
                   className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Logout</span>
-                </button>
+                </motion.button>
               )}
             </div>
 
-            {/* Mobile menu button - unchanged */}
+            {/* Mobile menu button */}
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -289,7 +293,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Mobile Navigation - simplified */}
+        {/* Mobile Navigation */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
@@ -317,7 +321,7 @@ export default function LandingPage() {
                       }}
                       className="block w-full text-left px-4 py-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
                     >
-                      Sign in
+                      Sign In
                     </button>
                     <button
                       onClick={() => {
@@ -326,7 +330,7 @@ export default function LandingPage() {
                       }}
                       className="block w-full text-left px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg"
                     >
-                      Get started
+                      Get Started
                     </button>
                   </>
                 ) : (
@@ -343,13 +347,18 @@ export default function LandingPage() {
         </AnimatePresence>
       </nav>
 
-      {/* Hero Section - less animated */}
+      {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* Background gradients - simpler */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-pink-50 to-red-50 opacity-40" />
+        {/* Background gradients */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-pink-50 to-red-50 opacity-50" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-purple-300 rounded-full blur-3xl opacity-20 animate-pulse" />
 
         <div className="relative max-w-7xl mx-auto text-center">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 bg-clip-text text-transparent">
               Supercharge Your
               <br />
@@ -364,62 +373,66 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <button
                 onClick={() => setShowSignUpModal(true)}
-                className="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                className="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
               >
-                <span>Start free trial</span>
+                <span>Start Free Trial</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button
-                onClick={() => navigateTo("#features")}
-                className="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-full font-semibold hover:border-purple-400 hover:text-purple-600 transition-all duration-300"
-              >
-                See how it works
               </button>
             </div>
 
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-gray-500">
+            <div className="mt-12 flex items-center justify-center space-x-8 text-sm text-gray-500">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-green-500" />
-                <span>No credit card</span>
+                <span>No credit card required</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-green-500" />
-                <span>14-day trial</span>
+                <span>14-day free trial</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-5 h-5 text-green-500" />
                 <span>Cancel anytime</span>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Features Section - reduced motion */}
+      {/* Features Section */}
       <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
             <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              How it works
+              How AutoFlow Works
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Three steps to automate your outreach
+              Three simple steps to automate your entire outreach process
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 items-stretch">
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            className="grid md:grid-cols-3 gap-8 items-stretch"
+          >
             {features.map((feature, idx) => (
-              <div
+              <motion.div
                 key={idx}
-                onMouseEnter={() => setHoveredFeature(idx)}
-                onMouseLeave={() => setHoveredFeature(null)}
+                variants={featureCardVariants}
+                whileHover="hover"
                 className="relative group h-full"
               >
-                <div className="relative bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl blur-xl" />
+                <div className="relative bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 h-full flex flex-col">
                   <div
-                    className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 transition-transform duration-300 ${
-                      hoveredFeature === idx ? "scale-105" : ""
-                    }`}
+                    className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform flex-shrink-0`}
                   >
                     <feature.icon className="w-8 h-8 text-white" />
                   </div>
@@ -433,39 +446,47 @@ export default function LandingPage() {
                     {feature.description}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Testimonials Section - more authentic */}
+      {/* Testimonials Section */}
       <section
         id="testimonials"
         className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-purple-50 to-pink-50"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Trusted by{" "}
+              Loved by{" "}
               <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                teams
+                1000+
               </span>{" "}
-              like yours
+              Companies
             </h2>
             <p className="text-xl text-gray-600">
-              Don't just take our word for it
+              See what our customers have to say
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, idx) => (
-              <div
+              <motion.div
                 key={idx}
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
-                style={{ transitionDelay: `${idx * 50}ms` }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                <Quote className="w-10 h-10 text-purple-400 mb-4 opacity-60" />
+                <Quote className="w-10 h-10 text-purple-400 mb-4" />
                 <p className="text-gray-700 leading-relaxed mb-6">
                   "{testimonial.quote}"
                 </p>
@@ -488,37 +509,46 @@ export default function LandingPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing Section - less flashy */}
+      {/* Pricing Section */}
       <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Simple pricing
+              Simple, Transparent Pricing
             </h2>
             <p className="text-xl text-gray-600">
-              No hidden fees. Upgrade or downgrade anytime.
+              Choose the plan that works best for you
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {pricingPlans.map((plan, idx) => (
-              <div
+              <motion.div
                 key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
                 className={`relative rounded-2xl p-8 ${
                   plan.recommended
-                    ? "bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-xl"
+                    ? "bg-gradient-to-br from-purple-600 to-pink-600 text-white shadow-2xl scale-105"
                     : "bg-white border-2 border-gray-100 shadow-lg"
                 }`}
               >
                 {plan.recommended && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-xs font-bold">
-                    MOST POPULAR
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold">
+                    RECOMMENDED
                   </div>
                 )}
                 <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
@@ -529,15 +559,15 @@ export default function LandingPage() {
                   )}
                 </div>
                 <p
-                  className={`mb-6 text-sm ${plan.recommended ? "text-purple-100" : "text-gray-500"}`}
+                  className={`mb-6 ${plan.recommended ? "text-purple-100" : "text-gray-500"}`}
                 >
                   {plan.description}
                 </p>
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center space-x-2 text-sm">
+                    <li key={i} className="flex items-center space-x-2">
                       <CheckCircle
-                        className={`w-4 h-4 flex-shrink-0 ${plan.recommended ? "text-white" : "text-green-500"}`}
+                        className={`w-5 h-5 ${plan.recommended ? "text-white" : "text-green-500"}`}
                       />
                       <span>{feature}</span>
                     </li>
@@ -547,51 +577,46 @@ export default function LandingPage() {
                   onClick={() => setShowSignUpModal(true)}
                   className={`w-full py-3 rounded-full font-semibold transition-all duration-300 ${
                     plan.recommended
-                      ? "bg-white text-purple-600 hover:shadow-md"
-                      : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-md"
+                      ? "bg-white text-purple-600 hover:shadow-lg hover:scale-105"
+                      : "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:scale-105"
                   }`}
                 >
-                  Get started
+                  Get Started
                 </button>
-              </div>
+              </motion.div>
             ))}
           </div>
-
-          <p className="text-center text-gray-500 text-sm mt-8">
-            All plans include a 14-day free trial. No commitment required.
-          </p>
         </div>
       </section>
 
-      {/* Final CTA Section - less over-the-top */}
+      {/* Final CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-5" />
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="relative max-w-4xl mx-auto text-center text-white">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Ready to scale?
+              Ready to Scale Your Outreach?
             </h2>
             <p className="text-xl mb-8 opacity-95">
-              Join thousands of companies automating their B2B workflow
+              Join thousands of companies automating their B2B workflow with
+              AutoFlow
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <button
                 onClick={() => setShowSignUpModal(true)}
-                className="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:shadow-md transition-all duration-300"
+                className="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300"
               >
-                Start your free trial
-              </button>
-              <button
-                onClick={() => navigateTo("#features")}
-                className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-purple-600 transition-all duration-300"
-              >
-                Learn more
+                Start Your 14-Day Free Trial
               </button>
             </div>
             <p className="text-sm mt-6 opacity-80">
-              No credit card needed. Really.
+              No credit card required. Cancel anytime.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -627,24 +652,24 @@ export default function LandingPage() {
                     Pricing
                   </button>
                 </li>
-                <li>
-                  <button className="hover:text-white transition">
-                    Changelog
-                  </button>
-                </li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <button className="hover:text-white transition">About</button>
+                  <button
+                    onClick={() => router.push("/public/about")}
+                    className="hover:text-white transition"
+                  >
+                    About
+                  </button>
                 </li>
                 <li>
-                  <button className="hover:text-white transition">Blog</button>
-                </li>
-                <li>
-                  <button className="hover:text-white transition">
+                  <button
+                    onClick={() => router.push("/public/contact")}
+                    className="hover:text-white transition"
+                  >
                     Contact
                   </button>
                 </li>
@@ -654,21 +679,26 @@ export default function LandingPage() {
               <h4 className="text-white font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <button className="hover:text-white transition">
+                  <button
+                    onClick={() => router.push("/public/privacy")}
+                    className="hover:text-white transition"
+                  >
                     Privacy
                   </button>
                 </li>
                 <li>
-                  <button className="hover:text-white transition">Terms</button>
+                  <button
+                    onClick={() => router.push("/public/terms")}
+                    className="hover:text-white transition"
+                  >
+                    Terms
+                  </button>
                 </li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm">
-            <p>© 2025 AutoFlow. All rights reserved.</p>
-            <p className="text-xs mt-2 text-gray-600">
-              Built with ☕️ and 🎧 in SF
-            </p>
+            <p>&copy; 2025 AutoFlow. All rights reserved.</p>
           </div>
         </div>
       </footer>
