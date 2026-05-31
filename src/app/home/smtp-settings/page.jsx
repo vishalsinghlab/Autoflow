@@ -1,18 +1,8 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axiosInstance";
+import { Mail, Server, Send, Trash2, Save } from "lucide-react";
 
 export default function SmtpSettingsPage() {
   const [smtpConfig, setSmtpConfig] = useState({
@@ -41,7 +31,7 @@ export default function SmtpSettingsPage() {
             email: config.user,
             password: "",
             encryption: config.encryption.toLowerCase(),
-            senderName: "", // Optionally include from backend later
+            senderName: "",
           });
         }
       } catch (err) {
@@ -66,7 +56,10 @@ export default function SmtpSettingsPage() {
 
     try {
       const response = smtpConfig.id
-        ? await axiosInstance.put(`/settings/smtp/update-smtp/${smtpConfig.id}`, payload)
+        ? await axiosInstance.put(
+            `/settings/smtp/update-smtp/${smtpConfig.id}`,
+            payload,
+          )
         : await axiosInstance.post("/settings/smtp/save-smtp", payload);
 
       if (response.data.success) {
@@ -89,7 +82,9 @@ export default function SmtpSettingsPage() {
     if (!smtpConfig.id) return;
 
     try {
-      const res = await axiosInstance.delete(`/settings/smtp/delete-smtp/${smtpConfig.id}`);
+      const res = await axiosInstance.delete(
+        `/settings/smtp/delete-smtp/${smtpConfig.id}`,
+      );
       if (res.data.success) {
         toast.success("SMTP configuration deleted.");
         setSmtpConfig({
@@ -138,111 +133,201 @@ export default function SmtpSettingsPage() {
   };
 
   return (
-    <div className="p-6 mx-auto space-y-6">
-      <h1 className="text-3xl font-bold text-purple-700">📨 SMTP Server Settings</h1>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="border-b border-[#E6E8EA] bg-white sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-4 border border-[#E6E8EA]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043]"></span>
+            SMTP_CONFIGURATION
+          </div>
+          <h1 className="text-2xl font-mono font-semibold text-[#11181C]">
+            smtp/<span className="text-[#FFC043]">settings</span>
+          </h1>
+          <p className="text-sm text-[#687076] font-mono mt-1">
+            configure email server settings for outgoing mail
+          </p>
+        </div>
+      </div>
 
-      <Card className="border border-purple-100 shadow-md">
-        <CardContent className="p-6 space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <Label>SMTP Host</Label>
-              <Input
-                placeholder="smtp.example.com"
-                value={smtpConfig.host}
-                onChange={(e) => handleChange("host", e.target.value)}
-              />
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="border border-[#E6E8EA] bg-white">
+          {/* Header Bar */}
+          <div className="border-b border-[#E6E8EA] px-6 py-3 bg-[#F8F9FA]">
+            <div className="flex items-center gap-2">
+              <Server className="w-3.5 h-3.5 text-[#687076]" />
+              <span className="text-xs font-mono text-[#687076]">
+                smtp_server_config()
+              </span>
+            </div>
+          </div>
+
+          {/* Form Body */}
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              {/* Host */}
+              <div>
+                <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                  smtp_host()
+                </label>
+                <input
+                  type="text"
+                  placeholder="smtp.gmail.com"
+                  value={smtpConfig.host}
+                  onChange={(e) => handleChange("host", e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+                />
+              </div>
+
+              {/* Port */}
+              <div>
+                <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                  smtp_port()
+                </label>
+                <input
+                  type="number"
+                  placeholder="587"
+                  value={smtpConfig.port}
+                  onChange={(e) => handleChange("port", e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+                />
+              </div>
+
+              {/* Sender Email */}
+              <div>
+                <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                  sender_email()
+                </label>
+                <input
+                  type="email"
+                  placeholder="noreply@company.com"
+                  value={smtpConfig.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                  smtp_password()
+                </label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={smtpConfig.password}
+                  onChange={(e) => handleChange("password", e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+                />
+              </div>
+
+              {/* Encryption */}
+              <div>
+                <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                  encryption()
+                </label>
+                <select
+                  value={smtpConfig.encryption}
+                  onChange={(e) => handleChange("encryption", e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+                >
+                  <option value="tls">tls</option>
+                  <option value="ssl">ssl</option>
+                  <option value="none">none</option>
+                </select>
+              </div>
+
+              {/* Sender Name */}
+              <div>
+                <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                  sender_name()
+                </label>
+                <input
+                  type="text"
+                  placeholder="Company Name"
+                  value={smtpConfig.senderName}
+                  onChange={(e) => handleChange("senderName", e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+                />
+              </div>
             </div>
 
-            <div>
-              <Label>SMTP Port</Label>
-              <Input
-                type="number"
-                placeholder="587"
-                value={smtpConfig.port}
-                onChange={(e) => handleChange("port", e.target.value)}
-              />
+            {/* Test Email Section */}
+            <div className="pt-4 border-t border-[#E6E8EA]">
+              <div className="flex items-center gap-2 mb-4">
+                <Mail className="w-3.5 h-3.5 text-[#FFC043]" />
+                <span className="text-xs font-mono text-[#687076] uppercase tracking-wider">
+                  test_configuration()
+                </span>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-mono text-[#687076] mb-1.5">
+                    recipient_email()
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="test@example.com"
+                    value={testEmail}
+                    onChange={(e) => setTestEmail(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button
+                    onClick={handleTestEmail}
+                    disabled={loading || !testEmail || !smtpConfig.host}
+                    className="w-full lg:w-auto px-4 py-2 bg-[#11181C] text-white font-mono text-sm hover:bg-[#FFC043] hover:text-[#11181C] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>test.send()</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <Label>Sender Email</Label>
-              <Input
-                type="email"
-                placeholder="noreply@example.com"
-                value={smtpConfig.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label>Password</Label>
-              <Input
-                type="password"
-                placeholder="••••••••"
-                value={smtpConfig.password}
-                onChange={(e) => handleChange("password", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label>Encryption</Label>
-              <Select
-                value={smtpConfig.encryption}
-                onValueChange={(val) => handleChange("encryption", val)}
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-4 border-t border-[#E6E8EA]">
+              <button
+                onClick={handleSave}
+                className="px-5 py-2 bg-[#11181C] text-white font-mono text-sm hover:bg-[#FFC043] hover:text-[#11181C] transition-all duration-150 flex items-center gap-2"
               >
-                <SelectTrigger className="w-full" />
-                <SelectContent>
-                  <SelectItem value="tls">TLS</SelectItem>
-                  <SelectItem value="ssl">SSL</SelectItem>
-                  <SelectItem value="none">None</SelectItem>
-                </SelectContent>
-              </Select>
+                <Save className="w-4 h-4" />
+                {smtpConfig.id ? "config.update()" : "config.save()"}
+              </button>
+              {smtpConfig.id && (
+                <button
+                  onClick={handleDelete}
+                  className="px-5 py-2 border border-[#E6E8EA] bg-white text-[#687076] font-mono text-sm hover:border-[#FF5F56] hover:text-[#FF5F56] transition-all duration-150 flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  config.delete()
+                </button>
+              )}
             </div>
 
-            <div>
-              <Label>Sender Name</Label>
-              <Input
-                placeholder="e.g. Example Inc"
-                value={smtpConfig.senderName}
-                onChange={(e) => handleChange("senderName", e.target.value)}
-              />
+            {/* Info Note */}
+            <div className="pt-2">
+              <div className="flex items-center gap-2 text-xs font-mono text-[#687076]">
+                <span className="text-[#FFC043]">→</span>
+                <span>
+                  configuration will be used for all outgoing email campaigns
+                </span>
+              </div>
             </div>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
-            <div>
-              <Label>Send Test Email To</Label>
-              <Input
-                type="email"
-                placeholder="test@example.com"
-                value={testEmail}
-                onChange={(e) => setTestEmail(e.target.value)}
-              />
-            </div>
-            <Button
-              onClick={handleTestEmail}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-              disabled={loading}
-            >
-              {loading ? "Sending..." : "Send Test Email"}
-            </Button>
-          </div>
-
-          <div className="flex gap-4">
-            <Button className="bg-gray-800 text-white mt-4" onClick={handleSave}>
-              {smtpConfig.id ? "Update Settings" : "Save Settings"}
-            </Button>
-            {smtpConfig.id && (
-              <Button
-                variant="destructive"
-                className="mt-4"
-                onClick={handleDelete}
-              >
-                Delete Config
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

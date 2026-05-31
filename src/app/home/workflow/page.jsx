@@ -10,23 +10,6 @@ import ReactFlow, {
   useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Plus,
   Workflow,
@@ -36,48 +19,45 @@ import {
   Phone,
   GitBranch,
   ArrowRight,
+  X,
 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
 const nodeTypes = [
-  { type: "Data Source", icon: Database, color: "blue" },
-  { type: "Enrichment", icon: BrainCircuit, color: "amber" },
-  { type: "Email Campaign", icon: Mail, color: "purple" },
-  { type: "Voice Drop", icon: Phone, color: "emerald" },
+  { type: "data_source", icon: Database },
+  { type: "enrichment", icon: BrainCircuit },
+  { type: "email_campaign", icon: Mail },
+  { type: "voice_drop", icon: Phone },
 ];
 
 const getNodeStyle = (type) => {
   const styles = {
-    "Data Source": {
-      background: "#eff6ff",
-      border: "#3b82f6",
-      text: "#1e40af",
+    data_source: { background: "#F8F9FA", border: "#1E2A3A", text: "#11181C" },
+    enrichment: { background: "#F8F9FA", border: "#FFC043", text: "#11181C" },
+    email_campaign: {
+      background: "#F8F9FA",
+      border: "#1E2A3A",
+      text: "#11181C",
     },
-    Enrichment: { background: "#fef3c7", border: "#f59e0b", text: "#92400e" },
-    "Email Campaign": {
-      background: "#f3e8ff",
-      border: "#a855f7",
-      text: "#6b21a8",
-    },
-    "Voice Drop": { background: "#ecfdf5", border: "#10b981", text: "#065f46" },
+    voice_drop: { background: "#F8F9FA", border: "#1E2A3A", text: "#11181C" },
   };
-  return styles[type] || styles["Email Campaign"];
+  return styles[type] || styles["data_source"];
 };
 
 const initialNodes = [
   {
     id: "1",
     type: "default",
-    data: { label: "Start Workflow" },
+    data: { label: "start_workflow" },
     position: { x: 300, y: 50 },
     style: {
-      background: "#ffffff",
-      border: "2px solid #94a3b8",
-      borderRadius: "10px",
+      background: "#F8F9FA",
+      border: "2px solid #FFC043",
       padding: "12px 20px",
-      fontSize: "13px",
-      fontWeight: 600,
-      color: "#475569",
+      fontSize: "12px",
+      fontFamily: "monospace",
+      fontWeight: 500,
+      color: "#11181C",
       width: 160,
     },
   },
@@ -98,7 +78,7 @@ export default function WorkflowBuilderPage() {
           {
             ...params,
             animated: true,
-            style: { stroke: "#a855f7", strokeWidth: 2 },
+            style: { stroke: "#FFC043", strokeWidth: 2 },
           },
           eds,
         ),
@@ -122,9 +102,9 @@ export default function WorkflowBuilderPage() {
       style: {
         background: style.background,
         border: `1.5px solid ${style.border}`,
-        borderRadius: "10px",
         padding: "12px 20px",
-        fontSize: "13px",
+        fontSize: "12px",
+        fontFamily: "monospace",
         fontWeight: 500,
         color: style.text,
         width: 160,
@@ -137,105 +117,54 @@ export default function WorkflowBuilderPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-white">
       {/* Top Navigation Bar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+      <div className="border-b border-[#E6E8EA] px-6 py-3 flex items-center justify-between flex-shrink-0 bg-white">
         <div className="flex items-center gap-3">
-          <div className="bg-purple-600 p-1.5 rounded-lg">
-            <Workflow className="w-5 h-5 text-white" />
+          <div className="border border-[#FFC043] p-1.5">
+            <Workflow className="w-5 h-5 text-[#11181C]" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">
-              Workflow Builder
+            <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-[#F8F9FA] text-[#1E2A3A] text-[10px] font-mono mb-1 border border-[#E6E8EA]">
+              <span className="w-1 h-1 rounded-full bg-[#FFC043]"></span>
+              WORKFLOW_EDITOR
+            </div>
+            <h1 className="text-base font-mono font-semibold text-[#11181C]">
+              workflow/<span className="text-[#FFC043]">builder</span>
             </h1>
-            <p className="text-xs text-gray-500">Visual workflow editor</p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           {/* Node/Edge Counter */}
-          <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg">
+          <div className="flex items-center gap-3 text-xs font-mono text-[#687076] bg-[#F8F9FA] px-3 py-1.5 border border-[#E6E8EA]">
             <div className="flex items-center gap-1.5">
               <GitBranch className="w-3.5 h-3.5" />
-              <span className="font-medium">{nodes.length}</span>
-              <span className="text-gray-400">nodes</span>
+              <span className="font-medium text-[#11181C]">{nodes.length}</span>
+              <span>nodes</span>
             </div>
-            <div className="w-px h-3 bg-gray-300"></div>
+            <div className="w-px h-3 bg-[#E6E8EA]"></div>
             <div className="flex items-center gap-1.5">
               <ArrowRight className="w-3.5 h-3.5" />
-              <span className="font-medium">{edges.length}</span>
-              <span className="text-gray-400">edges</span>
+              <span className="font-medium text-[#11181C]">{edges.length}</span>
+              <span>edges</span>
             </div>
           </div>
 
-          {/* Add Node Button + Dialog */}
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium">
-                <Plus className="w-4 h-4 mr-1.5" />
-                Add Node
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[400px]">
-              <DialogHeader>
-                <DialogTitle className="text-lg">Add Node</DialogTitle>
-                <DialogDescription className="text-sm text-gray-500">
-                  Select a node type to add to your workflow
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="py-4 space-y-4">
-                <Select
-                  value={selectedNode || ""}
-                  onValueChange={setSelectedNode}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose node type..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {nodeTypes.map(({ type, icon: Icon }) => (
-                      <SelectItem key={type} value={type}>
-                        <div className="flex items-center gap-2">
-                          <Icon className="w-4 h-4" />
-                          {type}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {selectedNode && (
-                  <div
-                    className="p-3 rounded-lg text-sm font-medium"
-                    style={{
-                      backgroundColor: getNodeStyle(selectedNode).background,
-                      borderColor: getNodeStyle(selectedNode).border,
-                      color: getNodeStyle(selectedNode).text,
-                      border: "1px solid",
-                    }}
-                  >
-                    Preview: {selectedNode}
-                  </div>
-                )}
-              </div>
-
-              <DialogFooter>
-                <Button
-                  onClick={handleAddNode}
-                  disabled={!selectedNode}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                >
-                  Add to Canvas
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          {/* Add Node Button */}
+          <button
+            onClick={() => setDialogOpen(true)}
+            className="bg-[#11181C] text-white px-4 py-1.5 text-sm font-mono hover:bg-[#FFC043] hover:text-[#11181C] transition-all duration-150 flex items-center gap-1.5"
+          >
+            <Plus className="w-4 h-4" />
+            node.add()
+          </button>
         </div>
       </div>
 
       {/* Canvas Area */}
-      <div className="flex-1 p-4">
-        <div className="h-full w-full bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="flex-1 p-4 bg-[#F8F9FA]">
+        <div className="h-full w-full bg-white border border-[#E6E8EA] overflow-hidden">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -245,26 +174,94 @@ export default function WorkflowBuilderPage() {
             fitView
             attributionPosition="bottom-left"
           >
-            <Background variant="dots" gap={16} size={1} color="#000" />
+            <Background variant="dots" gap={16} size={1} color="#E6E8EA" />
             <MiniMap
-              nodeStrokeColor="#a855f7"
-              nodeColor="#f3e8ff"
-              maskColor="rgb(0,0,0,0.08)"
+              nodeStrokeColor="#FFC043"
+              nodeColor="#F8F9FA"
+              maskColor="rgb(0,0,0,0.05)"
               style={{
-                borderRadius: "8px",
-                border: "1px solid #e2e8f0",
+                border: "1px solid #E6E8EA",
               }}
             />
             <Controls
               style={{
-                borderRadius: "8px",
-                border: "1px solid #e2e8f0",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                border: "1px solid #E6E8EA",
               }}
             />
           </ReactFlow>
         </div>
       </div>
+
+      {/* Add Node Modal */}
+      {dialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#11181C]/60">
+          <div className="w-full max-w-md bg-white border border-[#E6E8EA]">
+            {/* Modal Header */}
+            <div className="border-b border-[#E6E8EA] px-6 py-4 bg-[#F8F9FA] flex items-center justify-between">
+              <div>
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-white text-[#1E2A3A] text-[10px] font-mono mb-1 border border-[#E6E8EA]">
+                  <span className="w-1 h-1 rounded-full bg-[#FFC043]"></span>
+                  NODE_CREATOR
+                </div>
+                <h2 className="text-base font-mono font-semibold text-[#11181C]">
+                  node.add()
+                </h2>
+              </div>
+              <button
+                onClick={() => setDialogOpen(false)}
+                className="text-[#687076] hover:text-[#11181C] transition-colors duration-150"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="px-6 py-6 space-y-5">
+              <div>
+                <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                  select_node_type()
+                </label>
+                <select
+                  value={selectedNode || ""}
+                  onChange={(e) => setSelectedNode(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+                >
+                  <option value="">choose_type</option>
+                  {nodeTypes.map(({ type, icon: Icon }) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {selectedNode && (
+                <div
+                  className="p-3 border text-sm font-mono"
+                  style={{
+                    backgroundColor: getNodeStyle(selectedNode).background,
+                    borderColor: getNodeStyle(selectedNode).border,
+                    color: getNodeStyle(selectedNode).text,
+                  }}
+                >
+                  preview: {selectedNode}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="border-t border-[#E6E8EA] px-6 py-4 bg-[#F8F9FA]">
+              <button
+                onClick={handleAddNode}
+                disabled={!selectedNode}
+                className="w-full bg-[#11181C] text-white px-4 py-2 font-mono text-sm hover:bg-[#FFC043] hover:text-[#11181C] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                node.create()
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

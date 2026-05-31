@@ -1,6 +1,14 @@
-"use client"; // Add this to use client components inside layout
+"use client";
 
-import { LayoutDashboard, Bell, Search, ArrowLeft } from "lucide-react";
+import {
+  LayoutDashboard,
+  Bell,
+  Search,
+  ArrowLeft,
+  LogOut,
+  User,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,7 +50,7 @@ export default function RootLayout({ children }) {
   const [unreadMessages, setUnreadMessages] = useState([]);
   const [role, setRole] = useState("user");
   const selectedUser = useSelector((state) => state.user.selectedUser);
-  const userList = useSelector((state) => state.user.usersList); // ✅ matches slice
+  const userList = useSelector((state) => state.user.usersList);
 
   useEffect(() => {
     if (typeof window != undefined) {
@@ -106,152 +114,169 @@ export default function RootLayout({ children }) {
       setUnreadMessages(notifs.filter((n) => !n.isRead));
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
-    } finally {
     }
   };
 
   return (
-    <>
-      <div className="flex h-screen bg-gray-50">
-        {/* Mobile Sidebar */}
-        <div className="md:hidden">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="fixed top-4 left-4 z-50"
-              >
-                <LayoutDashboard className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[280px] p-0">
-              <Sidebar />
-            </SheetContent>
-          </Sheet>
-        </div>
+    <div className="flex h-screen bg-white">
+      {/* Mobile Sidebar */}
+      <div className="md:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="fixed top-4 left-4 z-50 border border-[#E6E8EA] bg-white rounded-none hover:border-[#1E2A3A] hover:bg-[#F8F9FA]"
+            >
+              <LayoutDashboard className="h-4 w-4 text-[#687076]" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent
+            side="left"
+            className="w-[280px] p-0 border-r border-[#E6E8EA]"
+          >
+            <Sidebar />
+          </SheetContent>
+        </Sheet>
+      </div>
 
-        {/* Desktop Sidebar */}
-        <div className="hidden md:flex md:flex-col">
-          <Sidebar />
-        </div>
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex md:flex-col">
+        <Sidebar />
+      </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Header */}
-          <header className="bg-white shadow-sm">
-            <div className="px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between h-16">
-                {/* Search bar */}
-                <div className="flex-1 flex items-center gap-4">
-                  <Button
-                    onClick={goBack}
-                    variant="ghost"
-                    className="rounded-md"
-                    aria-label="Go back"
-                  >
-                    <ArrowLeft className="h-5 w-5" />
-                    <span className="text-black">Back</span>
-                  </Button>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="bg-white border-b border-[#E6E8EA]">
+          <div className="px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              {/* Left side - Back button & Search */}
+              <div className="flex-1 flex items-center gap-4">
+                <Button
+                  onClick={goBack}
+                  variant="ghost"
+                  className="rounded-none px-3 py-2 text-[#687076] font-mono text-sm hover:bg-[#F8F9FA] hover:text-[#11181C] transition-all duration-150"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-1.5" />
+                  <span>back()</span>
+                </Button>
 
-                  <div className="relative w-full max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      type="search"
-                      placeholder="Search..."
-                      className="pl-10 w-full rounded-full bg-gray-100 border-none focus-visible:ring-2"
-                    />
-                  </div>
+                <div className="relative w-full max-w-sm">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#687076]" />
+                  <Input
+                    type="search"
+                    placeholder="search..."
+                    className="pl-9 w-full h-9 bg-white border border-[#E6E8EA] rounded-none font-mono text-sm placeholder:text-[#687076] focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 transition-all duration-150"
+                  />
                 </div>
-                {role === "admin" && userList?.length > 0 && (
+              </div>
+
+              {/* Admin User Selector */}
+              {role === "admin" && userList?.length > 0 && (
+                <div className="mx-4">
+                  <label className="sr-only">select_user</label>
                   <Select onValueChange={handleSelectUser}>
-                    <SelectTrigger className="w-[180px] bg-white border-gray-300">
-                      <SelectValue placeholder="Select user" />
+                    <SelectTrigger className="w-[180px] h-9 px-3 bg-white border border-[#E6E8EA] rounded-none font-mono text-sm hover:border-[#1E2A3A] focus:border-[#FFC043] transition-all duration-150">
+                      <SelectValue placeholder="select_user()" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border border-[#E6E8EA] rounded-none">
                       {userList.map((user) => (
-                        <SelectItem key={user.email} value={user.email}>
+                        <SelectItem
+                          key={user.email}
+                          value={user.email}
+                          className="font-mono text-sm focus:bg-[#F8F9FA] focus:text-[#11181C]"
+                        >
                           {user.username || user.email}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                )}
-                {/* Right side */}
-                <div className="flex items-center gap-4">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="relative rounded-full"
-                      >
-                        <Bell className="h-5 w-5" />
-                        <span className="sr-only">Notifications</span>
-
-                        {unreadMessages.length > 0 && (
-                          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-semibold leading-none text-white bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
-                            {unreadMessages.length}
-                          </span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80">
-                      <NotificationsPopover
-                        setUnreadMessages={setUnreadMessages}
-                      />
-                    </PopoverContent>
-                  </Popover>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="relative h-8 w-8 rounded-full"
-                      >
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src="/avatars/01.png" alt="icon" />
-                          <AvatarFallback>
-                            {username?.slice(0, 2).toUpperCase() || "UN"}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="w-56"
-                      align="end"
-                      forceMount
-                    >
-                      <DropdownMenuLabel className="font-normal">
-                        <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium leading-none">
-                            {username}
-                          </p>
-                          <p className="text-xs leading-none text-muted-foreground">
-                            {email}
-                          </p>
-                        </div>
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Users</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={logout}>
-                        Log out
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                 </div>
+              )}
+
+              {/* Right side - Notifications & Profile */}
+              <div className="flex items-center gap-3">
+                {/* Notifications */}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="relative rounded-none w-9 h-9 text-[#687076] hover:bg-[#F8F9FA] hover:text-[#11181C] transition-all duration-150"
+                    >
+                      <Bell className="h-4 w-4" />
+                      {unreadMessages.length > 0 && (
+                        <span className="absolute top-1 right-1 inline-flex items-center justify-center w-3.5 h-3.5 text-[10px] font-mono font-medium text-white bg-[#FFC043] rounded-full">
+                          {unreadMessages.length}
+                        </span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0 border border-[#E6E8EA] rounded-none shadow-none">
+                    <NotificationsPopover
+                      setUnreadMessages={setUnreadMessages}
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                {/* Profile Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="relative h-9 w-9 rounded-none p-0 hover:bg-[#F8F9FA] transition-all duration-150"
+                    >
+                      <Avatar className="h-8 w-8 rounded-none border border-[#E6E8EA]">
+                        <AvatarImage src="/avatars/01.png" alt="avatar" />
+                        <AvatarFallback className="bg-[#F8F9FA] text-[#1E2A3A] font-mono text-xs rounded-none">
+                          {username?.slice(0, 2).toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-56 border border-[#E6E8EA] rounded-none shadow-none p-0"
+                    align="end"
+                  >
+                    <DropdownMenuLabel className="px-4 py-3 border-b border-[#E6E8EA]">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-mono text-[#11181C]">
+                          {username}
+                        </p>
+                        <p className="text-xs font-mono text-[#687076]">
+                          {email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem className="px-4 py-2 text-sm font-mono text-[#687076] hover:bg-[#F8F9FA] hover:text-[#11181C] cursor-pointer rounded-none">
+                      <User className="mr-2 h-3.5 w-3.5" />
+                      profile()
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="px-4 py-2 text-sm font-mono text-[#687076] hover:bg-[#F8F9FA] hover:text-[#11181C] cursor-pointer rounded-none">
+                      <Users className="mr-2 h-3.5 w-3.5" />
+                      users()
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-[#E6E8EA]" />
+                    <DropdownMenuItem
+                      onClick={logout}
+                      className="px-4 py-2 text-sm font-mono text-[#687076] hover:bg-[#F8F9FA] hover:text-[#FF5F56] cursor-pointer rounded-none"
+                    >
+                      <LogOut className="mr-2 h-3.5 w-3.5" />
+                      logout()
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
-          </header>
+          </div>
+        </header>
 
-          {/* Main content area */}
-          <main className="flex-1 overflow-auto p-2 sm:p-2 lg:p-2 bg-gray-50">
-            {children}
-          </main>
-        </div>
+        {/* Main content area */}
+        <main className="flex-1 overflow-auto bg-[#F8F9FA] p-6">
+          {children}
+        </main>
       </div>
-    </>
+    </div>
   );
 }

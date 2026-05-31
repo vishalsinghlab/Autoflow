@@ -1,238 +1,203 @@
-"use client";
+export const metadata = {
+  title: "Terms of Service | AutoFlow",
+  description:
+    "Terms and conditions governing the use of the AutoFlow platform.",
+};
 
-import { useEffect, useState } from "react";
-import { Zap, ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+const sections = [
+  {
+    title: "agreement_to_terms",
+    content: [
+      "By accessing or using AutoFlow, you agree to be bound by these Terms of Service and all applicable laws and regulations.",
+      "If you do not agree with any part of these terms, you may not access or use the platform.",
+    ],
+  },
+  {
+    title: "use_of_the_platform",
+    content: [
+      "AutoFlow provides tools for lead management, company enrichment, workflow automation, campaign execution, and analytics.",
+      "You agree to use the platform only for lawful business purposes and in compliance with all applicable regulations.",
+    ],
+  },
+  {
+    title: "account_responsibilities",
+    content: [
+      "You are responsible for maintaining the security of your account credentials and for all activities that occur under your account.",
+      "You must provide accurate information when creating an account and keep that information up to date.",
+    ],
+  },
+  {
+    title: "data_and_compliance",
+    content: [
+      "You are responsible for ensuring that your collection, storage, and use of prospect data complies with applicable privacy, marketing, and communications laws.",
+      "AutoFlow is a software platform and does not provide legal advice regarding compliance obligations.",
+    ],
+  },
+  {
+    title: "acceptable_use",
+    content: [
+      "You may not use the platform to engage in unlawful, fraudulent, deceptive, harmful, or abusive activities.",
+      "You may not attempt to interfere with the security, integrity, or availability of the platform.",
+    ],
+  },
+  {
+    title: "third_party_services",
+    content: [
+      "AutoFlow may integrate with third-party platforms, data providers, communication tools, and external services.",
+      "Your use of those services may be subject to additional terms and policies provided by the respective providers.",
+    ],
+  },
+  {
+    title: "subscription_and_billing",
+    content: [
+      "Certain features of AutoFlow may require a paid subscription.",
+      "Subscription fees, billing cycles, and renewal terms will be communicated at the time of purchase.",
+      "Unless otherwise stated, fees are non-refundable.",
+    ],
+  },
+  {
+    title: "intellectual_property",
+    content: [
+      "AutoFlow and its associated content, software, trademarks, branding, and materials are protected by applicable intellectual property laws.",
+      "You may not copy, distribute, modify, reverse engineer, or create derivative works without prior written permission.",
+    ],
+  },
+  {
+    title: "service_availability",
+    content: [
+      "We strive to maintain reliable service availability but do not guarantee uninterrupted access.",
+      "Maintenance, updates, technical issues, or external factors may occasionally affect service performance.",
+    ],
+  },
+  {
+    title: "limitation_of_liability",
+    content: [
+      "To the maximum extent permitted by law, AutoFlow shall not be liable for indirect, incidental, consequential, special, or punitive damages arising from the use of the platform.",
+      "Our total liability shall not exceed the amount paid by you for the service during the twelve months preceding the claim.",
+    ],
+  },
+  {
+    title: "termination",
+    content: [
+      "We reserve the right to suspend or terminate access to the platform if these terms are violated or if continued access presents legal, operational, or security risks.",
+      "You may stop using the service and close your account at any time.",
+    ],
+  },
+  {
+    title: "changes_to_these_terms",
+    content: [
+      "We may update these Terms of Service periodically.",
+      "Continued use of the platform after changes become effective constitutes acceptance of the revised terms.",
+    ],
+  },
+  {
+    title: "contact_information",
+    content: [
+      "Questions regarding these Terms of Service may be directed to legal@autoflow.com.",
+    ],
+  },
+];
 
 export default function TermsPage() {
-  const router = useRouter();
-  const [scrolled, setScrolled] = useState(false);
-  const lastUpdated = "May 31, 2026";
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-white">
-      {/* Simple navbar */}
-      <nav
-        className={`fixed top-0 w-full z-40 transition-all duration-300 ${
-          scrolled
-            ? "bg-white/90 backdrop-blur-md shadow-sm"
-            : "bg-white shadow-sm"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div
-              className="flex items-center space-x-2 cursor-pointer group"
-              onClick={() => router.push("/")}
-            >
-              <Zap className="w-7 h-7 text-purple-600" />
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                AutoFlow
+    <main className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="border-b border-[#E6E8EA]">
+        <div className="max-w-7xl mx-auto px-6 py-32">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-8 border border-[#E6E8EA]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043]"></span>
+            AUTOFLOW / LEGAL
+          </div>
+
+          <div className="max-w-4xl">
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[1.1]">
+              terms_of_service
+              <br />
+              <span className="text-[#1E2A3A] border-b-4 border-[#FFC043] inline-block mt-2">
+                v1.0
               </span>
+            </h1>
+
+            <div className="mt-8 space-y-2">
+              <p className="text-sm font-mono text-[#687076]">
+                effective_date: January 1, 2026
+              </p>
+              <p className="text-lg text-[#687076] font-mono leading-relaxed max-w-2xl">
+                These Terms of Service govern access to and use of the AutoFlow
+                platform, products, and services.
+              </p>
             </div>
-
-            <button
-              onClick={() => router.push("/")}
-              className="flex items-center space-x-2 text-gray-500 hover:text-purple-600 transition-colors text-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
-            </button>
           </div>
-        </div>
-      </nav>
-
-      {/* Hero - simpler */}
-      <section className="pt-32 pb-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium mb-6">
-            Legal stuff
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Terms & Conditions
-          </h1>
-
-          <p className="text-gray-600">The boring but important stuff.</p>
-
-          <p className="mt-4 text-sm text-gray-400">
-            Last updated: {lastUpdated}
-          </p>
         </div>
       </section>
 
-      {/* Content - plain and readable */}
-      <section className="pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto bg-white rounded-2xl border border-gray-100 p-6 md:p-8 shadow-sm">
-          <div className="space-y-8">
-            <section>
-              <h2 className="text-xl font-bold mb-3">1. Using AutoFlow</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                By using AutoFlow, you agree to these terms. If you don't agree,
-                don't use the service. Simple.
-              </p>
-            </section>
+      {/* Content Sections */}
+      <section className="max-w-7xl mx-auto px-6 py-24">
+        <div className="max-w-3xl">
+          <div className="space-y-16">
+            {sections.map((section, idx) => (
+              <div
+                key={section.title}
+                className="scroll-mt-24"
+                id={section.title}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-xs font-mono text-[#FFC043] font-bold">
+                    {(idx + 1).toString().padStart(2, "0")}
+                  </span>
+                  <h2 className="text-xl md:text-2xl font-mono font-semibold text-[#11181C]">
+                    {section.title}()
+                  </h2>
+                </div>
 
-            <section>
-              <h2 className="text-xl font-bold mb-3">2. What you can do</h2>
-              <p className="text-gray-600 text-sm leading-relaxed mb-2">
-                AutoFlow helps you find leads, enrich data, and automate
-                outreach. Use it for legitimate business purposes. Don't be
-                shady.
-              </p>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We're serious about that last part.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">3. Your account</h2>
-              <ul className="list-disc pl-5 space-y-1 text-gray-600 text-sm">
-                <li>Keep your password safe</li>
-                <li>Don't share your account</li>
-                <li>Tell us if something looks wrong</li>
-                <li>You're responsible for what happens under your account</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">
-                4. Don't do these things
-              </h2>
-              <ul className="list-disc pl-5 space-y-1 text-gray-600 text-sm">
-                <li>Use AutoFlow for anything illegal</li>
-                <li>Send spam or malicious stuff</li>
-                <li>Try to break into our systems</li>
-                <li>Copy our code or design</li>
-                <li>Be a jerk, basically</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">5. Money stuff</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Some features cost money. We'll tell you how much before you
-                pay. Subscriptions renew automatically unless you cancel. You
-                can cancel anytime in your account settings.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">6. Who owns what</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                AutoFlow owns AutoFlow. Our code, design, logos, and technology
-                belong to us. You own your data and anything you create with the
-                platform. We don't claim ownership of your stuff.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">7. Privacy</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We care about your privacy. Our{" "}
-                <button className="text-purple-600 hover:underline">
-                  Privacy Policy
-                </button>{" "}
-                explains how we handle your data. By using AutoFlow, you agree
-                to that too.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">8. Uptime</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We try really hard to keep AutoFlow running smoothly. But
-                sometimes things break, need maintenance, or the internet just
-                has a bad day. We don't guarantee 100% uptime, but we'll do our
-                best.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">9. Liability</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                To the extent allowed by law, AutoFlow isn't liable for any
-                damages caused by using (or not being able to use) the service.
-                If you have a problem, your main remedy is to stop using
-                AutoFlow.
-              </p>
-              <p className="text-gray-600 text-sm leading-relaxed mt-2">
-                Basically, we're not responsible if you don't hit your sales
-                quota.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">10. No warranties</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We provide AutoFlow "as is" and "as available." No promises that
-                it'll be perfect or bug-free. That said, we test things and fix
-                issues when we find them.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">11. Ending things</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We can suspend or terminate your account if you violate these
-                terms or if you're using AutoFlow in a way that harms others.
-                You can cancel anytime through your account settings.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">
-                12. Changes to these terms
-              </h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We might update these terms occasionally. We'll post changes
-                here and update the date. If it's a big change, we'll try to
-                notify you directly. Continuing to use AutoFlow after changes
-                means you accept the new terms.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">13. Where this applies</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                These terms are governed by California law. If there's a
-                dispute, we'd rather talk it out than go to court. But if it
-                comes to that, it'll be in San Francisco.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">14. Questions?</h2>
-              <p className="text-gray-600 text-sm leading-relaxed mb-3">
-                If you have questions about these terms, email us at:
-              </p>
-              <div className="bg-gray-50 rounded-xl p-4">
-                <p className="font-mono text-sm text-purple-600">
-                  legal@autoflow.com
-                </p>
-                <p className="text-gray-500 text-xs mt-1">
-                  We'll get back to you within a few days.
-                </p>
+                <div className="space-y-4 ml-6 border-l-2 border-[#E6E8EA] pl-6">
+                  {section.content.map((paragraph, index) => (
+                    <p
+                      key={index}
+                      className="text-sm font-mono text-[#687076] leading-relaxed"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
               </div>
-            </section>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer Note */}
+        <div className="max-w-3xl mt-20 pt-8 border-t border-[#E6E8EA]">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#687076]">
+            <span className="text-[#FFC043]">→</span>
+            <span>questions@legal@autoflow.com</span>
+          </div>
+          <div className="flex items-center gap-2 mt-2 text-xs font-mono text-[#687076]">
+            <span className="text-[#FFC043]">$</span>
+            <span>autoflow --terms-of-service --version 1.0</span>
           </div>
         </div>
       </section>
 
-      {/* Simple footer */}
-      <footer className="bg-gray-900 text-gray-400 py-8 px-4 sm:px-6 lg:px-8 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto text-center text-sm">
-          <p>© 2025 AutoFlow. Built with ☕️ and 🎧.</p>
+      {/* Closing Statement */}
+      <section className="border-t border-[#E6E8EA]">
+        <div className="max-w-7xl mx-auto px-6 py-24">
+          <div className="max-w-4xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-8 border border-[#E6E8EA]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043]"></span>
+              CORE_PROMISE
+            </div>
+            <p className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter leading-[1.2] text-[#11181C]">
+              Our goal is to provide reliable automation infrastructure while
+              maintaining transparency, security, and responsible use.
+            </p>
+            <div className="mt-6 flex items-center gap-2 text-sm font-mono text-[#687076]">
+              <span className="text-[#FFC043]">$</span>
+              <span>autoflow --core-values</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043] animate-pulse"></span>
+            </div>
+          </div>
         </div>
-      </footer>
-    </div>
+      </section>
+    </main>
   );
 }

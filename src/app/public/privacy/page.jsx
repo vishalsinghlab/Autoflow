@@ -1,221 +1,157 @@
-"use client";
+export const metadata = {
+  title: "Privacy Policy | AutoFlow",
+  description:
+    "Learn how AutoFlow collects, uses, and protects your information.",
+};
 
-import { useEffect, useState } from "react";
-import { Zap, ArrowLeft, Shield } from "lucide-react";
-import { useRouter } from "next/navigation";
+const sections = [
+  {
+    title: "information_we_collect",
+    content: [
+      "We collect information that you provide directly to us, including account information, contact details, billing information, and communications with our team.",
+      "We may also collect information about how you use the platform, including workflow activity, campaign performance, integrations, and device information.",
+    ],
+  },
+  {
+    title: "how_we_use_information",
+    content: [
+      "We use collected information to operate, maintain, improve, and secure AutoFlow.",
+      "Information may also be used to provide customer support, process transactions, communicate updates, and develop new features.",
+    ],
+  },
+  {
+    title: "data_enrichment_services",
+    content: [
+      "AutoFlow may enrich company and contact records using third-party data providers.",
+      "Users are responsible for ensuring that their use of enriched data complies with applicable laws and regulations in their jurisdiction.",
+    ],
+  },
+  {
+    title: "information_sharing",
+    content: [
+      "We do not sell personal information.",
+      "Information may be shared with trusted service providers that help us operate the platform, process payments, deliver communications, or provide infrastructure services.",
+    ],
+  },
+  {
+    title: "data_security",
+    content: [
+      "We implement administrative, technical, and organizational safeguards designed to protect customer information.",
+      "While no system can guarantee absolute security, we continuously monitor and improve our security practices.",
+    ],
+  },
+  {
+    title: "data_retention",
+    content: [
+      "We retain information for as long as necessary to provide our services, comply with legal obligations, resolve disputes, and enforce agreements.",
+    ],
+  },
+  {
+    title: "your_rights",
+    content: [
+      "Depending on your location, you may have rights related to access, correction, deletion, portability, or restriction of your personal information.",
+      "Requests can be submitted through our support team.",
+    ],
+  },
+  {
+    title: "third_party_services",
+    content: [
+      "AutoFlow integrates with external platforms and services. Their privacy practices are governed by their own policies.",
+    ],
+  },
+  {
+    title: "policy_updates",
+    content: [
+      "We may update this Privacy Policy periodically. Material changes will be communicated through appropriate channels.",
+    ],
+  },
+  {
+    title: "contact",
+    content: [
+      "Questions regarding this Privacy Policy may be directed to privacy@autoflow.com.",
+    ],
+  },
+];
 
 export default function PrivacyPage() {
-  const router = useRouter();
-  const [scrolled, setScrolled] = useState(false);
-  const lastUpdated = "May 31, 2026";
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-white">
-      {/* Simple navbar */}
-      <nav
-        className={`fixed top-0 w-full z-40 transition-all duration-300 ${
-          scrolled
-            ? "bg-white/90 backdrop-blur-md shadow-sm"
-            : "bg-white shadow-sm"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div
-              className="flex items-center space-x-2 cursor-pointer group"
-              onClick={() => router.push("/")}
-            >
-              <Zap className="w-7 h-7 text-purple-600" />
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                AutoFlow
+    <main className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="border-b border-[#E6E8EA]">
+        <div className="max-w-7xl mx-auto px-6 py-32">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-8 border border-[#E6E8EA]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043]"></span>
+            AUTOFLOW / LEGAL
+          </div>
+
+          <div className="max-w-4xl">
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[1.1]">
+              privacy_policy
+              <br />
+              <span className="text-[#1E2A3A] border-b-4 border-[#FFC043] inline-block mt-2">
+                v1.0
               </span>
+            </h1>
+
+            <div className="mt-8 space-y-2">
+              <p className="text-sm font-mono text-[#687076]">
+                effective_date: January 1, 2026
+              </p>
+              <p className="text-lg text-[#687076] font-mono leading-relaxed max-w-2xl">
+                This Privacy Policy explains how AutoFlow collects, uses,
+                stores, and protects information when you use our platform.
+              </p>
             </div>
-
-            <button
-              onClick={() => router.push("/")}
-              className="flex items-center space-x-2 text-gray-500 hover:text-purple-600 transition-colors text-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back</span>
-            </button>
           </div>
-        </div>
-      </nav>
-
-      {/* Hero - simpler */}
-      <section className="pt-32 pb-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium mb-6">
-            <Shield className="w-3 h-3" />
-            Privacy
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            We don't sell your data
-          </h1>
-
-          <p className="text-gray-600">
-            Simple as that. Here's how we handle the info you trust us with.
-          </p>
-
-          <p className="mt-4 text-sm text-gray-400">Updated: {lastUpdated}</p>
         </div>
       </section>
 
-      {/* Content - plain and readable */}
-      <section className="pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto bg-white rounded-2xl border border-gray-100 p-6 md:p-8 shadow-sm">
-          <div className="space-y-8">
-            <section>
-              <h2 className="text-xl font-bold mb-3">1. What we collect</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                When you sign up, we ask for your email and name. If you use
-                paid features, we collect billing info through our payment
-                processor (we never see your full card details).
-              </p>
-              <p className="text-gray-600 text-sm leading-relaxed mt-2">
-                When you use AutoFlow, we store the leads and data you import.
-                That's your data, not ours.
-              </p>
-            </section>
+      {/* Content Sections */}
+      <section className="max-w-7xl mx-auto px-6 py-24">
+        <div className="max-w-3xl">
+          <div className="space-y-16">
+            {sections.map((section, idx) => (
+              <div
+                key={section.title}
+                className="scroll-mt-24"
+                id={section.title}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-xs font-mono text-[#FFC043] font-bold">
+                    {(idx + 1).toString().padStart(2, "0")}
+                  </span>
+                  <h2 className="text-xl md:text-2xl font-mono font-semibold text-[#11181C]">
+                    {section.title}()
+                  </h2>
+                </div>
 
-            <section>
-              <h2 className="text-xl font-bold mb-3">
-                2. How we use your info
-              </h2>
-              <ul className="list-disc pl-5 space-y-1 text-gray-600 text-sm">
-                <li>To keep AutoFlow running and improve it</li>
-                <li>To send you login codes and important updates</li>
-                <li>To bill you if you're on a paid plan</li>
-                <li>To help when you contact support</li>
-                <li>To prevent abuse and keep things secure</li>
-              </ul>
-              <p className="text-gray-600 text-sm leading-relaxed mt-2">
-                That's it. No selling your data to random companies.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">3. Security</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We take security seriously. Your data is encrypted, we use
-                industry-standard practices, and we're careful about who has
-                access. No system is 100% hack-proof, but we do our best.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">
-                4. Cookies and tracking
-              </h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We use cookies to keep you logged in and remember your
-                preferences. That's it. No creepy tracking across the internet.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">
-                5. Third-party services
-              </h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We use other services to help run AutoFlow — like cloud hosting,
-                email delivery, and payment processing. These companies only get
-                the data they need to do their job, and they're not allowed to
-                use it for anything else.
-              </p>
-              <p className="text-gray-600 text-sm leading-relaxed mt-2">
-                We don't share your data with random third parties for marketing
-                or anything like that.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">
-                6. How long we keep stuff
-              </h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We keep your account data as long as you're using AutoFlow. If
-                you delete your account, we'll remove your data within 30 days
-                unless we need to keep it for legal reasons (like tax stuff).
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">7. Your rights</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                You can access, correct, or delete your data anytime through
-                your account settings. If you want to export everything, just
-                ask — we'll help.
-              </p>
-              <p className="text-gray-600 text-sm leading-relaxed mt-2">
-                Depending on where you live, you might have additional privacy
-                rights. Email us if you have questions.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">8. Kids</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                AutoFlow is for businesses. If you're under 13, please don't
-                sign up. We don't knowingly collect data from kids.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">
-                9. Changes to this policy
-              </h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                If we make big changes to how we handle privacy, we'll let you
-                know by email and update this page. Small changes just get
-                updated here.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-bold mb-3">10. Questions?</h2>
-              <p className="text-gray-600 text-sm leading-relaxed mb-3">
-                Privacy questions, concerns, or just curious? Email us:
-              </p>
-              <div className="bg-gray-50 rounded-xl p-4">
-                <p className="font-mono text-sm text-purple-600">
-                  privacy@autoflow.com
-                </p>
-                <p className="text-gray-500 text-xs mt-1">
-                  We usually reply within a day or two.
-                </p>
+                <div className="space-y-4 ml-6 border-l-2 border-[#E6E8EA] pl-6">
+                  {section.content.map((paragraph, index) => (
+                    <p
+                      key={index}
+                      className="text-sm font-mono text-[#687076] leading-relaxed"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
               </div>
-            </section>
+            ))}
+          </div>
+        </div>
 
-            {/* Simple summary box */}
-            <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
-              <h3 className="font-semibold text-purple-900 mb-2 text-sm">
-                The TL;DR
-              </h3>
-              <p className="text-purple-800 text-sm">
-                We don't sell your data. We only collect what we need to run the
-                service. You own your information. Questions? Just ask.
-              </p>
-            </div>
+        {/* Footer Note */}
+        <div className="max-w-3xl mt-20 pt-8 border-t border-[#E6E8EA]">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#687076]">
+            <span className="text-[#FFC043]">→</span>
+            <span>questions@privacy@autoflow.com</span>
+          </div>
+          <div className="flex items-center gap-2 mt-2 text-xs font-mono text-[#687076]">
+            <span className="text-[#FFC043]">$</span>
+            <span>autoflow --privacy-policy --version 1.0</span>
           </div>
         </div>
       </section>
-
-      {/* Simple footer */}
-      <footer className="bg-gray-900 text-gray-400 py-8 px-4 sm:px-6 lg:px-8 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto text-center text-sm">
-          <p>© 2025 AutoFlow. Built with ☕️ and 🎧.</p>
-        </div>
-      </footer>
-    </div>
+    </main>
   );
 }

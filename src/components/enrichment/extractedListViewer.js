@@ -1,14 +1,5 @@
 "use client";
-
 import { useState, useEffect } from "react";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
 import {
   Table,
   TableHeader,
@@ -18,19 +9,28 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import axiosInstance from "@/lib/axiosInstance";
-import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
+import {
+  Trash,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+  Database,
+} from "lucide-react";
 
 const columnsMapping = {
-  "name": "Person",
-  "email": "Email",
-  "linkedin": "Linkdin",
-  "phone": "Phone",
-  "title": "Designation",
-  "organization.name": "Company",
-  "organization.industry": "Industry",
-  "organization.website_url": "Website",
-  "organization.estimated_num_employees": "Employees Strength"
+  name: "person",
+  email: "email",
+  linkedin: "linkedin",
+  phone: "phone",
+  title: "designation",
+  "organization.name": "company",
+  "organization.industry": "industry",
+  "organization.website_url": "website",
+  "organization.estimated_num_employees": "employees",
+};
+
+function isUrl(value) {
+  return typeof value === "string" && value.match(/^https?:\/\/[^\s]+$/i);
 }
 
 export default function ExtractedListViewer() {
@@ -57,7 +57,9 @@ export default function ExtractedListViewer() {
 
   const getEnrichmentJobs = async () => {
     try {
-      const response = await axiosInstance.get('/data-enrichment/enrichment-jobs-list');
+      const response = await axiosInstance.get(
+        "/data-enrichment/enrichment-jobs-list",
+      );
       setEnrichmentJobs(response.data.jobs);
     } catch (error) {
       console.error("Error fetching enrichment jobs:", error);
@@ -65,7 +67,7 @@ export default function ExtractedListViewer() {
   };
 
   const flattenData = (data) => {
-    return data.map(item => {
+    return data.map((item) => {
       const flattened = { ...item };
       if (item.organization) {
         Object.entries(item.organization).forEach(([key, value]) => {
@@ -79,11 +81,14 @@ export default function ExtractedListViewer() {
 
   const fetchData = async (list, page) => {
     try {
-      const response = await axiosInstance.post(`/data-enrichment/enriched-data`, {
-        page,
-        limit: rowsPerPage,
-        list: list,
-      });
+      const response = await axiosInstance.post(
+        `/data-enrichment/enriched-data`,
+        {
+          page,
+          limit: rowsPerPage,
+          list: list,
+        },
+      );
 
       const { enrichedData, totalCount } = response.data;
       const flattenedData = flattenData(enrichedData);
@@ -92,10 +97,11 @@ export default function ExtractedListViewer() {
       setTotalPages(Math.ceil(totalCount / rowsPerPage));
 
       if (flattenedData.length > 0) {
-        const columns = Object.keys(flattenedData[0]).filter(col => columnsMapping[col]);
-        // console.log("columns", columns)
-        setColumns(columns);
-        setHeaders(columns.map(fc => columnsMapping[fc]))
+        const cols = Object.keys(flattenedData[0]).filter(
+          (col) => columnsMapping[col],
+        );
+        setColumns(cols);
+        setHeaders(cols.map((fc) => columnsMapping[fc]));
       } else {
         setColumns([]);
       }
@@ -104,22 +110,24 @@ export default function ExtractedListViewer() {
     }
   };
 
-
   const handleDeleteList = async () => {
     if (!selectedList) return;
 
-    const confirmDelete = window.confirm("Are you sure you want to delete this list?");
+    const confirmDelete = window.confirm(
+      "delete list? this action cannot be undone.",
+    );
     if (!confirmDelete) return;
 
     try {
-      await axiosInstance.delete(`/data-enrichment/delete-enriched-data/${selectedList.id}`);
+      await axiosInstance.delete(
+        `/data-enrichment/delete-enriched-data/${selectedList.id}`,
+      );
       await getEnrichmentJobs();
       setSelectedList(null);
       setEnrichedData([]);
       setColumns([]);
     } catch (error) {
       console.error("Error deleting list:", error);
-      alert("Failed to delete the list.");
     }
   };
 
@@ -134,11 +142,14 @@ export default function ExtractedListViewer() {
       const pagesToDownload = parseInt(downloadPages);
       const limit = pagesToDownload * rowsPerPage;
 
-      const response = await axiosInstance.post(`/data-enrichment/enriched-data`, {
-        page: 1,
-        limit: limit, // effectively fetch all rows
-        list: selectedList,
-      });
+      const response = await axiosInstance.post(
+        `/data-enrichment/enriched-data`,
+        {
+          page: 1,
+          limit: limit,
+          list: selectedList,
+        },
+      );
 
       const data = flattenData(response.data.enrichedData);
       if (data.length === 0) {
@@ -146,9 +157,13 @@ export default function ExtractedListViewer() {
         return;
       }
 
-      const csvHeaders = columns.map(col => `"${columnsMapping[col] || col}"`).join(",");
-      const csvRows = data.map(row =>
-        columns.map(col => `"${(row[col] || "").toString().replace(/"/g, '""')}"`).join(",")
+      const csvHeaders = columns
+        .map((col) => `"${columnsMapping[col] || col}"`)
+        .join(",");
+      const csvRows = data.map((row) =>
+        columns
+          .map((col) => `"${(row[col] || "").toString().replace(/"/g, '""')}"`)
+          .join(","),
       );
       const csvContent = [csvHeaders, ...csvRows].join("\n");
 
@@ -167,133 +182,175 @@ export default function ExtractedListViewer() {
     }
   };
 
-
-
   return (
-    <Card className="p-6">
-      <div className="mb-4">
-        <h3 className="text-lg font-bold text-purple-800 mb-2">Select a List</h3>
-        <Select onValueChange={(value) => handleListSelection(JSON.parse(value))}>
-          <SelectTrigger className="w-[250px] bg-white border-purple-200 text-purple-700">
-            <SelectValue placeholder="Choose a list" />
-          </SelectTrigger>
-          <SelectContent>
-            {enrichmentJobs.map((list) => (
-              <SelectItem key={list.id} value={JSON.stringify(list)}>
-                {list.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <div className="w-full">
+      {/* List Selection Header */}
+      <div className="mb-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-4 border border-[#E6E8EA]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043]"></span>
+          ENRICHED_DATA_VIEWER
+        </div>
+
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+              select_list()
+            </label>
+            <select
+              onChange={(e) => handleListSelection(JSON.parse(e.target.value))}
+              className="w-full max-w-sm px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+            >
+              <option value="">choose_list</option>
+              {enrichmentJobs.map((list) => (
+                <option key={list.id} value={JSON.stringify(list)}>
+                  {list.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
+      {/* Data Display */}
       {selectedList && (
-        <div className="overflow-auto border border-purple-100 rounded-lg overflow-visible">
-          <div className="flex justify-between items-center mb-4 px-2 space-x-2">
-            <h4 className="text-md font-semibold text-purple-700">
-              Viewing: {selectedList.name}
-            </h4>
-            <h4 className="text-md font-semibold text-purple-700">
-              Status: {selectedList.status === "Completed" ? "Enriched" : "In-progress"}
-            </h4>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 p-4 bg-gray-50 rounded-xl">
-              {/* Download CSV section */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-                <label className="text-sm font-medium text-gray-700">Download Pages</label>
-                <input
-                  type="number"
-                  placeholder="e.g. 3"
-                  className="border border-purple-300 focus:ring-purple-500 focus:border-purple-500 rounded-lg px-3 py-1.5 text-sm w-[160px] transition-all"
-                  value={downloadPages}
-                  onChange={(e) => setDownloadPages(e.target.value)}
-                  min={1}
-                  max={totalPages}
-                />
-                <Button
-                  size="sm"
-                  className="bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg px-4 py-2"
-                  onClick={handleDownloadCSV}
-                  disabled={!downloadPages}
-                >
-                  Download CSV
-                </Button>
+        <div className="border border-[#E6E8EA] bg-white">
+          {/* Header Bar */}
+          <div className="border-b border-[#E6E8EA] px-4 py-3 bg-[#F8F9FA]">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <Database className="w-3.5 h-3.5 text-[#687076]" />
+                <span className="text-xs font-mono text-[#687076]">
+                  viewing: {selectedList.name}
+                </span>
+                <span className="text-[11px] font-mono text-[#687076] px-2 py-0.5 border border-[#E6E8EA]">
+                  status:{" "}
+                  {selectedList.status === "Completed"
+                    ? "enriched"
+                    : "in_progress"}
+                </span>
               </div>
 
-              <div className="relative group cursor-pointer text-red-600 hover:text-red-800 transition w-fit">
-                <Trash onClick={handleDeleteList} />
-
-                {/* Tooltip */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none z-20">
-                  Delete List
+              <div className="flex items-center gap-3">
+                {/* Download Section */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    placeholder="pages"
+                    className="w-20 px-2 py-1.5 bg-white border border-[#E6E8EA] font-mono text-xs outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+                    value={downloadPages}
+                    onChange={(e) => setDownloadPages(e.target.value)}
+                    min={1}
+                    max={totalPages}
+                  />
+                  <button
+                    onClick={handleDownloadCSV}
+                    disabled={!downloadPages}
+                    className="px-3 py-1.5 border border-[#E6E8EA] bg-white text-[#687076] font-mono text-xs hover:border-[#27C93F] hover:text-[#27C93F] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+                  >
+                    <Download className="w-3 h-3" />
+                    csv.export()
+                  </button>
                 </div>
+
+                {/* Delete Button */}
+                <button
+                  onClick={handleDeleteList}
+                  className="p-1.5 text-[#687076] hover:text-[#FF5F56] transition-colors duration-150"
+                  title="delete_list"
+                >
+                  <Trash className="w-4 h-4" />
+                </button>
               </div>
-
-
             </div>
-
           </div>
 
-
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-purple-100 text-purple-800">
-                {headers.map((col) => (
-                  <TableHead key={col}>{col}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {enrichedData.map((row, idx) => (
-                <TableRow key={idx} className="hover:bg-purple-50">
-                  {columns.map((col) => (
-                    <TableCell key={col}>
-                      {isUrl(row[col]) ? (
-                        <a
-                          href={row[col]}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-purple-600 underline hover:text-purple-800 transition"
-                        >
-                          {row[col]}
-                        </a>
-                      ) : (
-                        row[col]
-                      )}
-                    </TableCell>
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-b border-[#E6E8EA] bg-[#F8F9FA]">
+                  {headers.map((col, idx) => (
+                    <TableHead
+                      key={idx}
+                      className="px-4 py-3 text-left text-xs font-mono text-[#687076] uppercase tracking-wider"
+                    >
+                      {col}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {enrichedData.map((row, idx) => (
+                  <TableRow
+                    key={idx}
+                    className="border-b border-[#E6E8EA] hover:bg-[#F8F9FA] transition-colors duration-150"
+                  >
+                    {columns.map((col, colIdx) => (
+                      <TableCell
+                        key={colIdx}
+                        className="px-4 py-3 text-sm font-mono text-[#11181C]"
+                      >
+                        {isUrl(row[col]) ? (
+                          <a
+                            href={row[col]}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#FFC043] hover:underline transition-colors duration-150"
+                          >
+                            {row[col]}
+                          </a>
+                        ) : (
+                          row[col] || "—"
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
 
-          <div className="flex items-center justify-between px-4 py-2 mt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </Button>
-            <span className="text-sm text-purple-700">
-              Page {currentPage} of {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[#E6E8EA]">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 border border-[#E6E8EA] bg-white text-[#687076] font-mono text-xs hover:border-[#1E2A3A] hover:text-[#11181C] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                previous
+              </button>
+              <span className="text-xs font-mono text-[#687076]">
+                page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 border border-[#E6E8EA] bg-white text-[#687076] font-mono text-xs hover:border-[#1E2A3A] hover:text-[#11181C] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              >
+                next
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!selectedList && (
+        <div className="border border-[#E6E8EA] bg-white p-12 text-center">
+          <div className="flex flex-col items-center gap-3">
+            <Database className="w-8 h-8 text-[#687076] opacity-50" />
+            <p className="text-sm font-mono text-[#687076]">no_list_selected</p>
+            <p className="text-xs font-mono text-[#687076]">
+              select a list from the dropdown above
+            </p>
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
-}
-
-
-function isUrl(value) {
-  return typeof value === "string" && value.match(/^https?:\/\/[^\s]+$/i);
 }

@@ -20,13 +20,10 @@ import {
   Workflow,
   ChartBar,
   LogOut,
-  Zap,
   HelpCircle,
-  Bell,
   Shield,
   ChevronLeft,
   Menu,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,7 +35,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -82,46 +78,27 @@ export default function Sidebar() {
         .map((n) => n[0])
         .join("")
         .toUpperCase()
+        .slice(0, 2)
     : "U";
 
   const mainNavItems = [
-    {
-      href: "/home/data-source",
-      icon: Database,
-      label: "Data Sources",
-      badge: null,
-    },
-    {
-      href: "/home/contacts-source",
-      icon: Contact,
-      label: "Enrichment",
-      badge: null
-    },
-    {
-      href: "/home/campaign",
-      icon: LucideTarget,
-      label: "Campaigns",
-      badge: null,
-    },
-    {
-      href: "/home/email-editor",
-      icon: LayoutTemplate,
-      label: "Templates",
-      badge: null,
-    },
-    { href: "/home/stats", icon: ChartBar, label: "Analytics", badge: null },
-    { href: "/home/workflow", icon: Workflow, label: "Workflows", badge: null },
+    { href: "/home/data-source", icon: Database, label: "data_sources" },
+    { href: "/home/contacts-source", icon: Contact, label: "enrichment" },
+    { href: "/home/campaign", icon: LucideTarget, label: "campaigns" },
+    { href: "/home/email-editor", icon: LayoutTemplate, label: "templates" },
+    { href: "/home/stats", icon: ChartBar, label: "analytics" },
+    { href: "/home/workflow", icon: Workflow, label: "workflows" },
   ];
 
   const bottomNavItems = [
     {
       icon: HelpCircle,
-      label: "Help & Support",
+      label: "help",
       onClick: () => window.open("/help", "_blank"),
     },
     {
       icon: Shield,
-      label: "Security",
+      label: "security",
       onClick: () => router.push("/security"),
     },
   ];
@@ -129,89 +106,68 @@ export default function Sidebar() {
   return (
     <TooltipProvider delayDuration={0}>
       <div
-        className={`relative flex flex-col h-full bg-gradient-to-br from-gray-50 via-white to-purple-50/30 border-r border-purple-100/50 shadow-2xl transition-all duration-300 ${
-          isCollapsed ? "w-20" : "w-72"
+        className={`relative flex flex-col h-full bg-white border-r border-[#E6E8EA] transition-all duration-200 ${
+          isCollapsed ? "w-16" : "w-64"
         }`}
       >
         {/* Toggle Button */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-20 z-50 bg-white border border-purple-200 rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 group"
+          className="absolute -right-3 top-20 z-50 bg-white border border-[#E6E8EA] rounded-full p-1.5 shadow-sm hover:border-[#1E2A3A] hover:shadow-md transition-all duration-150 group"
         >
           {isCollapsed ? (
-            <ChevronRight className="w-4 h-4 text-purple-600 group-hover:text-purple-700" />
+            <ChevronRight className="w-3.5 h-3.5 text-[#687076] group-hover:text-[#11181C]" />
           ) : (
-            <ChevronLeft className="w-4 h-4 text-purple-600 group-hover:text-purple-700" />
+            <ChevronLeft className="w-3.5 h-3.5 text-[#687076] group-hover:text-[#11181C]" />
           )}
         </button>
 
         {/* Header Section */}
-        <div className="flex items-center justify-between h-20 px-5 border-b border-purple-100/50">
+        <div className="flex items-center h-16 px-4 border-b border-[#E6E8EA]">
           {!isCollapsed ? (
             <button
               onClick={() => router.push("/")}
-              className="flex items-center space-x-2 group transition-all duration-200 hover:scale-105"
+              className="flex items-center gap-2 group"
             >
-              <div className="relative">
-                <Zap className="w-7 h-7 text-purple-600 group-hover:text-purple-700 transition-colors" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-700 to-pink-600 bg-clip-text text-transparent">
-                AutoFlow
+              <span className="text-lg font-mono font-semibold tracking-tighter text-[#11181C]">
+                autoflow<span className="text-[#FFC043]">/</span>
               </span>
             </button>
           ) : (
             <button
               onClick={() => router.push("/")}
-              className="w-full flex justify-center group"
+              className="w-full flex justify-center"
             >
-              <div className="relative">
-                <Zap className="w-7 h-7 text-purple-600 group-hover:text-purple-700 transition-colors" />
-                <Sparkles className="w-3 h-3 text-yellow-500 absolute -top-1 -right-1 animate-pulse" />
-              </div>
+              <span className="text-lg font-mono font-semibold text-[#11181C]">
+                a<span className="text-[#FFC043]">/</span>
+              </span>
             </button>
           )}
-
-          {/* {!isCollapsed && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-purple-100 rounded-full"
-              onClick={() => router.push("/notifications")}
-            >
-              <Bell className="w-5 h-5 text-purple-600" />
-            </Button>
-          )} */}
         </div>
 
         {/* User Profile Section */}
         {!isCollapsed && (
-          <div className="px-4 py-4 border-b border-purple-100/50">
-            <div className="flex items-center space-x-3 p-2 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100">
-              <Avatar className="w-10 h-10 border-2 border-purple-300">
-                <AvatarFallback className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+          <div className="px-4 py-4 border-b border-[#E6E8EA]">
+            <div className="flex items-center gap-3">
+              <Avatar className="w-9 h-9 border border-[#E6E8EA]">
+                <AvatarFallback className="bg-[#F8F9FA] text-[#1E2A3A] font-mono text-xs">
                   {userInitials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900 truncate">
-                  {user?.name || "Guest User"}
+                <p className="text-sm font-mono text-[#11181C] truncate">
+                  {user?.username || "guest_user"}
                 </p>
-                <p className="text-xs text-purple-600 truncate">
-                  {user?.email || "Welcome!"}
+                <p className="text-xs font-mono text-[#687076] truncate">
+                  {user?.email || "not signed in"}
                 </p>
               </div>
-              <Badge
-                variant="secondary"
-                className="bg-purple-100 text-purple-700"
-              >
-                Pro
-              </Badge>
             </div>
           </div>
         )}
 
         {/* Navigation Section */}
-        <nav className="flex-1 px-3 py-6 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-200 scrollbar-track-transparent">
+        <nav className="flex-1 px-3 py-6 overflow-y-auto">
           <div className="space-y-1">
             {mainNavItems.map((item) => (
               <SidebarLink
@@ -220,12 +176,11 @@ export default function Sidebar() {
                 icon={item.icon}
                 label={item.label}
                 isCollapsed={isCollapsed}
-                badge={item.badge}
               />
             ))}
           </div>
 
-          <Separator className="my-4 bg-purple-100/50" />
+          <Separator className="my-4 bg-[#E6E8EA]" />
 
           {/* Settings Collapsible */}
           <Collapsible
@@ -236,40 +191,40 @@ export default function Sidebar() {
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost"
-                className={`w-full justify-between rounded-xl px-3 py-2 transition-all duration-200 text-sm font-medium group ${
+                className={`w-full justify-between rounded-none px-3 py-2 transition-all duration-150 text-sm font-mono group ${
                   openItems.settings
-                    ? "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-900 shadow-sm"
-                    : "text-purple-700 hover:bg-purple-50 hover:text-purple-900"
+                    ? "bg-[#F8F9FA] text-[#11181C] border-l-2 border-[#FFC043]"
+                    : "text-[#687076] hover:bg-[#F8F9FA] hover:text-[#11181C]"
                 } ${isCollapsed ? "justify-center px-2" : ""}`}
               >
                 <div className="flex items-center gap-3">
                   <Settings
-                    className={`h-5 w-5 transition-colors ${
+                    className={`h-4 w-4 transition-colors ${
                       openItems.settings
-                        ? "text-purple-900"
-                        : "text-purple-500 group-hover:text-purple-700"
+                        ? "text-[#11181C]"
+                        : "text-[#687076] group-hover:text-[#11181C]"
                     }`}
                   />
-                  {!isCollapsed && <span>Settings</span>}
+                  {!isCollapsed && <span>settings</span>}
                 </div>
                 {!isCollapsed &&
                   (openItems.settings ? (
-                    <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+                    <ChevronDown className="h-3.5 w-3.5" />
                   ) : (
-                    <ChevronRight className="h-4 w-4 transition-transform duration-200" />
+                    <ChevronRight className="h-3.5 w-3.5" />
                   ))}
               </Button>
             </CollapsibleTrigger>
             {!isCollapsed && (
-              <CollapsibleContent className="pl-6 mt-1 space-y-1">
+              <CollapsibleContent className="pl-9 mt-1 space-y-1">
                 <SidebarSubLink
                   href="/home/senders"
-                  label="Senders"
+                  label="senders"
                   isCollapsed={isCollapsed}
                 />
                 <SidebarSubLink
                   href="/home/smtp-settings"
-                  label="SMTP Settings"
+                  label="smtp_settings"
                   isCollapsed={isCollapsed}
                 />
               </CollapsibleContent>
@@ -284,20 +239,20 @@ export default function Sidebar() {
                   <Button
                     variant="ghost"
                     onClick={item.onClick}
-                    className={`w-full justify-start gap-3 rounded-xl px-3 py-2 transition-all duration-200 text-sm font-medium text-purple-700 hover:bg-purple-50 hover:text-purple-900 ${
+                    className={`w-full justify-start gap-3 rounded-none px-3 py-2 transition-all duration-150 text-sm font-mono text-[#687076] hover:bg-[#F8F9FA] hover:text-[#11181C] ${
                       isCollapsed ? "justify-center px-2" : ""
                     }`}
                   >
-                    <item.icon className="h-5 w-5 text-purple-500" />
+                    <item.icon className="h-4 w-4" />
                     {!isCollapsed && <span>{item.label}</span>}
                   </Button>
                 </TooltipTrigger>
                 {isCollapsed && (
                   <TooltipContent
                     side="right"
-                    className="bg-gray-900 text-white"
+                    className="bg-[#11181C] text-white border-none rounded-none font-mono text-xs"
                   >
-                    <p>{item.label}</p>
+                    {item.label}
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -305,26 +260,29 @@ export default function Sidebar() {
           </div>
         </nav>
 
-        <Separator className="bg-purple-100/50" />
+        <Separator className="bg-[#E6E8EA]" />
 
-        {/* Footer Section */}
-        <div className="p-4">
+        {/* Footer Section - Logout */}
+        <div className="p-3">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 onClick={logout}
-                className={`w-full justify-start gap-3 rounded-xl px-3 py-2 transition-all duration-200 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 ${
+                className={`w-full justify-start gap-3 rounded-none px-3 py-2 transition-all duration-150 text-sm font-mono text-[#687076] hover:bg-[#F8F9FA] hover:text-[#11181C] ${
                   isCollapsed ? "justify-center px-2" : ""
                 }`}
               >
-                <LogOut className="h-5 w-5" />
-                {!isCollapsed && <span>Logout</span>}
+                <LogOut className="h-4 w-4" />
+                {!isCollapsed && <span>logout</span>}
               </Button>
             </TooltipTrigger>
             {isCollapsed && (
-              <TooltipContent side="right" className="bg-gray-900 text-white">
-                <p>Logout</p>
+              <TooltipContent
+                side="right"
+                className="bg-[#11181C] text-white border-none rounded-none font-mono text-xs"
+              >
+                logout
               </TooltipContent>
             )}
           </Tooltip>
@@ -333,8 +291,8 @@ export default function Sidebar() {
         {/* Version Badge */}
         {!isCollapsed && (
           <div className="px-4 pb-4">
-            <p className="text-xs text-center text-purple-400">
-              Version 2.0.0 • © 2024 AutoFlow
+            <p className="text-xs font-mono text-[#687076] text-center">
+              v2.0.0 / ready
             </p>
           </div>
         )}
@@ -343,46 +301,27 @@ export default function Sidebar() {
   );
 }
 
-function SidebarLink({ href, icon: Icon, label, isCollapsed, badge = null }) {
+function SidebarLink({ href, icon: Icon, label, isCollapsed }) {
   const pathname = usePathname();
   const isActive = pathname.startsWith(href);
 
   const LinkContent = (
     <Button
       variant="ghost"
-      className={`w-full justify-start gap-3 rounded-xl px-3 py-2 transition-all duration-200 text-sm font-medium group relative ${
+      className={`w-full justify-start gap-3 rounded-none px-3 py-2 transition-all duration-150 text-sm font-mono group ${
         isActive
-          ? "bg-gradient-to-r from-purple-100 to-pink-100 text-purple-900 shadow-sm"
-          : "text-purple-700 hover:bg-purple-50 hover:text-purple-900"
+          ? "bg-[#F8F9FA] text-[#11181C] border-l-2 border-[#FFC043]"
+          : "text-[#687076] hover:bg-[#F8F9FA] hover:text-[#11181C]"
       } ${isCollapsed ? "justify-center px-2" : ""}`}
     >
       <Icon
-        className={`h-5 w-5 transition-all duration-200 ${
+        className={`h-4 w-4 transition-colors ${
           isActive
-            ? "text-purple-900 scale-110"
-            : "text-purple-500 group-hover:text-purple-700 group-hover:scale-110"
+            ? "text-[#11181C]"
+            : "text-[#687076] group-hover:text-[#11181C]"
         }`}
       />
-      {!isCollapsed && (
-        <>
-          <span className="flex-1 text-left">{label}</span>
-          {badge && (
-            <Badge
-              variant="secondary"
-              className={`text-xs ${
-                isActive
-                  ? "bg-purple-200 text-purple-800"
-                  : "bg-purple-100 text-purple-600"
-              }`}
-            >
-              {badge}
-            </Badge>
-          )}
-        </>
-      )}
-      {isActive && !isCollapsed && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-purple-600 to-pink-600 rounded-r-full" />
-      )}
+      {!isCollapsed && <span className="flex-1 text-left">{label}</span>}
     </Button>
   );
 
@@ -394,15 +333,11 @@ function SidebarLink({ href, icon: Icon, label, isCollapsed, badge = null }) {
             {LinkContent}
           </Link>
         </TooltipTrigger>
-        <TooltipContent side="right" className="bg-gray-900 text-white">
-          <div className="flex flex-col gap-1">
-            <p>{label}</p>
-            {badge && (
-              <Badge variant="secondary" className="text-xs">
-                {badge}
-              </Badge>
-            )}
-          </div>
+        <TooltipContent
+          side="right"
+          className="bg-[#11181C] text-white border-none rounded-none font-mono text-xs"
+        >
+          {label}
         </TooltipContent>
       </Tooltip>
     );
@@ -421,10 +356,10 @@ function SidebarSubLink({ href, label, isCollapsed }) {
     <Link href={href} className="block">
       <Button
         variant="ghost"
-        className={`w-full justify-start rounded-lg px-3 py-1.5 transition-all duration-200 text-sm font-medium ${
+        className={`w-full justify-start rounded-none px-3 py-1.5 transition-all duration-150 text-xs font-mono ${
           isActive
-            ? "bg-purple-100 text-purple-900 border-l-2 border-purple-600"
-            : "text-purple-600 hover:bg-purple-50 hover:text-purple-800"
+            ? "text-[#11181C] border-l-2 border-[#FFC043] bg-[#F8F9FA]"
+            : "text-[#687076] hover:bg-[#F8F9FA] hover:text-[#11181C]"
         }`}
       >
         <span className="ml-2">{label}</span>

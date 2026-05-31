@@ -12,13 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axiosInstance";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowRight, CheckCircle } from "lucide-react";
 
 const destinationFilterConfig = {
   nasdaq: [
     {
       key: "exchange",
-      label: "Exchange",
+      label: "exchange",
       options: [
         { name: "NASDAQ", value: "NASDAQ" },
         { name: "NYSE", value: "NYSE" },
@@ -26,86 +26,85 @@ const destinationFilterConfig = {
     },
     {
       key: "marketcap",
-      label: "Market Cap",
+      label: "market_cap",
       options: [
-        { name: "Mega (>$200B)", value: "mega" },
-        { name: "Large ($10-$200B)", value: "large" },
-        { name: "Medium ($2-$10B)", value: "medium" },
-        { name: "Small ($300M-$2B)", value: "small" },
-        { name: "Micro ($50M-$300M)", value: "micro" },
-        { name: "Nano (<$50M)", value: "nano" },
+        { name: "mega (>$200B)", value: "mega" },
+        { name: "large ($10-$200B)", value: "large" },
+        { name: "medium ($2-$10B)", value: "medium" },
+        { name: "small ($300M-$2B)", value: "small" },
+        { name: "micro ($50M-$300M)", value: "micro" },
+        { name: "nano (<$50M)", value: "nano" },
       ],
     },
     {
       key: "sector",
-      label: "Sector",
+      label: "sector",
       options: [
-        { name: "Technology", value: "technology" },
-        { name: "Telecommunications", value: "telecommunications" },
-        { name: "Healthcare", value: "healthcare" },
-        { name: "Financials", value: "financials" },
-        { name: "Real Estate", value: "real_estate" },
-        { name: "Consumer Discretionary", value: "consumer_discretionary" },
-        { name: "Consumer Staples", value: "consumer_staples" },
-        { name: "Industrials", value: "industrials" },
-        { name: "Basic Materials", value: "basic_materials" },
-        { name: "Energy", value: "energy" },
-        { name: "Utilities", value: "utilities" },
+        { name: "technology", value: "technology" },
+        { name: "telecommunications", value: "telecommunications" },
+        { name: "healthcare", value: "healthcare" },
+        { name: "financials", value: "financials" },
+        { name: "real_estate", value: "real_estate" },
+        { name: "consumer_discretionary", value: "consumer_discretionary" },
+        { name: "consumer_staples", value: "consumer_staples" },
+        { name: "industrials", value: "industrials" },
+        { name: "basic_materials", value: "basic_materials" },
+        { name: "energy", value: "energy" },
+        { name: "utilities", value: "utilities" },
       ],
     },
     {
       key: "country",
-      label: "Country",
+      label: "country",
       options: [
-        { name: "United States", value: "united_states" },
-        { name: "Canada", value: "canada" },
-        { name: "United Kingdom", value: "united_kingdom" },
-        { name: "India", value: "india" },
+        { name: "united_states", value: "united_states" },
+        { name: "canada", value: "canada" },
+        { name: "united_kingdom", value: "united_kingdom" },
+        { name: "india", value: "india" },
       ],
     },
     {
       key: "region",
-      label: "Region",
+      label: "region",
       options: [
-        { name: "North America", value: "north_america" },
-        { name: "Europe", value: "europe" },
-        { name: "Asia", value: "asia" },
+        { name: "north_america", value: "north_america" },
+        { name: "europe", value: "europe" },
+        { name: "asia", value: "asia" },
       ],
     },
     {
       key: "rating",
-      label: "Analyst Rating",
+      label: "analyst_rating",
       options: [
-        { name: "Buy", value: "buy" },
-        { name: "Hold", value: "hold" },
-        { name: "Sell", value: "sell" },
+        { name: "buy", value: "buy" },
+        { name: "hold", value: "hold" },
+        { name: "sell", value: "sell" },
       ],
     },
   ],
   ycombinator: [
     {
       key: "batch",
-      label: "Batch",
+      label: "batch",
       options: [
         { name: "X25", value: "X25" },
         { name: "W24", value: "W24" },
         { name: "S23", value: "S23" },
         { name: "W23", value: "W23" },
-        // Add more batches as needed
       ],
     },
     {
       key: "industry",
-      label: "Industry",
+      label: "industry",
       options: [
-        { name: "Fintech", value: "Fintech" },
-        { name: "HealthCare", value: "HealthCare" },
-        { name: "Consumer", value: "Consumer" },
+        { name: "fintech", value: "Fintech" },
+        { name: "healthcare", value: "HealthCare" },
+        { name: "consumer", value: "Consumer" },
       ],
     },
     {
       key: "companySize",
-      label: "Company Size",
+      label: "company_size",
       options: [
         { name: "1-10", value: "1-10" },
         { name: "11-50", value: "11-50" },
@@ -117,23 +116,23 @@ const destinationFilterConfig = {
   linkedin: [
     {
       key: "searchType",
-      label: "Search Type",
+      label: "search_type",
       options: [
-        { name: "Companies", value: "company" },
-        { name: "Jobs", value: "jobs" },
-        { name: "People", value: "people" },
+        { name: "companies", value: "company" },
+        { name: "jobs", value: "jobs" },
+        { name: "people", value: "people" },
       ],
     },
     {
       key: "keywords",
-      label: "Search Keywords",
+      label: "keywords",
       type: "input",
     },
   ],
   clutch: [
     {
       key: "url",
-      label: "Search Url",
+      label: "search_url",
       type: "input",
     },
   ],
@@ -145,7 +144,7 @@ export default function ExtractionDestinationConfig() {
   const [filters, setFilters] = useState({});
   const [limit, setLimit] = useState("");
   const [googleSheetLink, setGoogleSheetLink] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ loading state
+  const [loading, setLoading] = useState(false);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -156,7 +155,7 @@ export default function ExtractionDestinationConfig() {
       Object.entries(filters).filter(([_, v]) => v),
     );
 
-    setLoading(true); // ✅ Start loading
+    setLoading(true);
     try {
       const payload = {
         name: extractionName,
@@ -176,7 +175,7 @@ export default function ExtractionDestinationConfig() {
       console.error("Error", error.message);
       toast.error(error.message || "Something went wrong.");
     } finally {
-      setLoading(false); // ✅ End loading
+      setLoading(false);
     }
   };
 
@@ -192,19 +191,16 @@ export default function ExtractionDestinationConfig() {
     const baseFilters = destinationFilterConfig[destination] || [];
     const searchType = filters["searchType"];
 
-    // Merge extra LinkedIn filters if searchType is present
     let filtersToRender = [...baseFilters];
     if (destination === "linkedin" && searchType) {
       filtersToRender = [...filtersToRender];
     }
 
-    // Filter out those that have unmet dependsOn conditions
     const visibleFilters = filtersToRender.filter((filter) => {
       if (!filter.dependsOn) return true;
       return filters[filter.dependsOn.key] === filter.dependsOn.value;
     });
 
-    // Deduplicate by key (in case of multiple entries like "location")
     const seenKeys = new Set();
     const deduplicatedFilters = visibleFilters.filter((filter) => {
       if (seenKeys.has(filter.key)) return false;
@@ -216,8 +212,8 @@ export default function ExtractionDestinationConfig() {
       const value = filters[filter.key] || "";
 
       return (
-        <div key={filter.key} className="mb-4">
-          <Label className="w-auto mb-2 border-purple-200 text-purple-700">
+        <div key={filter.key} className="mb-5">
+          <Label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
             {filter.label}
           </Label>
 
@@ -230,7 +226,8 @@ export default function ExtractionDestinationConfig() {
                   [filter.key]: e.target.value,
                 }))
               }
-              placeholder={`Enter ${filter.label.toLowerCase()}`}
+              placeholder={`enter ${filter.label}`}
+              className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
             />
           ) : (
             <Select
@@ -239,14 +236,16 @@ export default function ExtractionDestinationConfig() {
                 setFilters((prev) => ({ ...prev, [filter.key]: selected }))
               }
             >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder={`Select ${filter.label.toLowerCase()}`}
-                />
+              <SelectTrigger className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]">
+                <SelectValue placeholder={`select ${filter.label}`} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="border border-[#E6E8EA] rounded-none">
                 {filter.options?.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    className="font-mono text-sm focus:bg-[#F8F9FA] focus:text-[#11181C]"
+                  >
                     {option.name}
                   </SelectItem>
                 ))}
@@ -259,93 +258,147 @@ export default function ExtractionDestinationConfig() {
   };
 
   return (
-    <div className="bg-purple-50 p-6 rounded-xl shadow-md mt-0">
-      <h2 className="text-xl font-bold text-purple-800 mb-2">Source</h2>
-
-      <Select
-        onValueChange={(value) => {
-          setDestination(value);
-          setFilters({});
-          setGoogleSheetLink("");
-        }}
-        value={destination}
-      >
-        <SelectTrigger className="w-auto bg-white border-purple-200 text-purple-700">
-          <SelectValue placeholder="Choose a data-source" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="googleSheet">Google Sheet</SelectItem>
-          <SelectItem value="nasdaq">Nasdaq</SelectItem>
-          <SelectItem value="ycombinator">Y Combinator</SelectItem>
-          <SelectItem value="linkedin">LinkedIn</SelectItem>
-          <SelectItem value="clutch">Clutch</SelectItem>
-        </SelectContent>
-      </Select>
-
-      {destination && (
-        <div className="mt-6">
-          <Label className="text-sm text-purple-800">Extraction Name</Label>
-          <Input
-            type="text"
-            placeholder="e.g. Fintech List April"
-            value={extractionName}
-            onChange={(e) => setExtractionName(e.target.value)}
-            className="bg-white border-purple-200 text-purple-700"
-          />
-        </div>
-      )}
-
-      {/* Google Sheet input */}
-      {destination === "googleSheet" && (
-        <div className="mt-6">
-          <Label className="text-sm text-purple-800">Google Sheet Link</Label>
-          <Input
-            type="url"
-            placeholder="https://docs.google.com/..."
-            value={googleSheetLink}
-            onChange={(e) => setGoogleSheetLink(e.target.value)}
-            className="bg-white border-purple-200 text-purple-700"
-          />
-        </div>
-      )}
-
-      {/* Filters */}
-      {destination !== "" && destination !== "googleSheet" && (
-        <div className="mt-6 space-y-6">{renderDynamicFilters()}</div>
-      )}
+    <div className="w-full">
+      {/* Source Selection */}
+      <div className="mb-6">
+        <Label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+          source()
+        </Label>
+        <Select
+          onValueChange={(value) => {
+            setDestination(value);
+            setFilters({});
+            setGoogleSheetLink("");
+          }}
+          value={destination}
+        >
+          <SelectTrigger className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]">
+            <SelectValue placeholder="select data source" />
+          </SelectTrigger>
+          <SelectContent className="border border-[#E6E8EA] rounded-none">
+            <SelectItem value="googleSheet" className="font-mono text-sm">
+              google_sheet
+            </SelectItem>
+            <SelectItem value="nasdaq" className="font-mono text-sm">
+              nasdaq
+            </SelectItem>
+            <SelectItem value="ycombinator" className="font-mono text-sm">
+              y_combinator
+            </SelectItem>
+            <SelectItem value="linkedin" className="font-mono text-sm">
+              linkedin
+            </SelectItem>
+            <SelectItem value="clutch" className="font-mono text-sm">
+              clutch
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       {destination && (
         <>
-          <div className="mt-4">
-            <Label className="text-sm text-purple-800">Limit</Label>
+          {/* Extraction Name */}
+          <div className="mb-5">
+            <Label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+              extraction_name()
+            </Label>
             <Input
-              type="number"
-              placeholder="e.g. 100"
-              value={limit}
-              onChange={(e) => setLimit(e.target.value)}
-              className="bg-white border-purple-200 text-purple-700"
+              type="text"
+              placeholder="e.g., fintech_list_april"
+              value={extractionName}
+              onChange={(e) => setExtractionName(e.target.value)}
+              className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
             />
           </div>
 
-          <div className="mt-6 flex gap-4">
+          {/* Google Sheet input */}
+          {destination === "googleSheet" && (
+            <div className="mb-5">
+              <Label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                google_sheet_url()
+              </Label>
+              <Input
+                type="url"
+                placeholder="https://docs.google.com/..."
+                value={googleSheetLink}
+                onChange={(e) => setGoogleSheetLink(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+              />
+            </div>
+          )}
+
+          {/* Filters */}
+          {destination !== "" && destination !== "googleSheet" && (
+            <div className="my-6 pt-2 border-t border-[#E6E8EA]">
+              <div className="mb-4">
+                <p className="text-xs font-mono text-[#687076] uppercase tracking-wider">
+                  filters()
+                </p>
+                <p className="text-[11px] font-mono text-[#687076] mt-1">
+                  configure extraction parameters
+                </p>
+              </div>
+              <div className="space-y-5">{renderDynamicFilters()}</div>
+            </div>
+          )}
+
+          {/* Limit */}
+          <div className="mb-6">
+            <Label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+              limit()
+            </Label>
+            <Input
+              type="number"
+              placeholder="100"
+              value={limit}
+              onChange={(e) => setLimit(e.target.value)}
+              className="w-full px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 mt-8 pt-2 border-t border-[#E6E8EA]">
             <Button
-              className="bg-purple-700 text-white hover:bg-purple-800 flex items-center gap-2"
+              className="group px-5 py-2 bg-[#11181C] text-white font-mono text-sm hover:bg-[#FFC043] hover:text-[#11181C] transition-all duration-150 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={startDataExtractionAutomation}
-              disabled={loading}
+              disabled={
+                loading ||
+                !extractionName ||
+                (destination === "googleSheet" && !googleSheetLink)
+              }
             >
-              {loading && <Loader2 className="animate-spin h-4 w-4" />}
-              {loading ? "Extracting..." : "Start"}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>extracting...</span>
+                </>
+              ) : (
+                <>
+                  <span>extractor.run()</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-150" />
+                </>
+              )}
             </Button>
             <Button
               variant="outline"
-              className="text-purple-700 border-purple-300"
               onClick={resetConfig}
               disabled={loading}
+              className="px-5 py-2 border border-[#E6E8EA] bg-white text-[#687076] font-mono text-sm hover:border-[#1E2A3A] hover:text-[#11181C] transition-all duration-150"
             >
-              Cancel
+              reset()
             </Button>
           </div>
         </>
+      )}
+
+      {/* Empty state hint */}
+      {!destination && (
+        <div className="mt-8 pt-6 border-t border-[#E6E8EA]">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#687076]">
+            <span className="text-[#FFC043]">→</span>
+            <span>select a data source to configure extraction parameters</span>
+          </div>
+        </div>
       )}
     </div>
   );

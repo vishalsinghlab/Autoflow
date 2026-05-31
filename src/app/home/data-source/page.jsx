@@ -7,63 +7,137 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function ExtractionPage() {
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50">
-      <h1 className="text-3xl font-bold text-purple-900 mb-8 tracking-tight">
-        ⚙️ Automation Setup
-      </h1>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="border-b border-[#E6E8EA] bg-white sticky top-0 z-10">
+        <div className="px-8 py-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-4 border border-[#E6E8EA]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043]"></span>
+            DATA PIPELINE
+          </div>
+          <h1 className="text-2xl font-mono font-semibold text-[#11181C]">
+            extraction/
+            <span className="text-[#FFC043]">configure</span>
+          </h1>
+          <p className="text-sm text-[#687076] font-mono mt-1">
+            manage data sources, extraction jobs, and enriched company lists
+          </p>
+        </div>
+      </div>
 
-      <Tabs defaultValue="setup" className="w-full">
-        <TabsList className="bg-white border border-purple-200 rounded-2xl shadow-md p-1 flex gap-2 justify-between mb-8">
-          <TabsTrigger
+      {/* Main Content */}
+      <div className="px-8 py-8">
+        <Tabs defaultValue="setup" className="w-full">
+          <TabsList className="inline-flex h-auto gap-0 bg-transparent border-b border-[#E6E8EA] rounded-none w-full justify-start mb-8 p-0">
+            <TabsTrigger
+              value="setup"
+              className="
+                px-6 py-3 text-sm font-mono text-[#687076] 
+                data-[state=active]:text-[#11181C] data-[state=active]:border-b-2 data-[state=active]:border-[#FFC043]
+                hover:text-[#11181C] transition-all duration-150 rounded-none
+                bg-transparent
+              "
+            >
+              source_config()
+            </TabsTrigger>
+            <TabsTrigger
+              value="jobs"
+              className="
+                px-6 py-3 text-sm font-mono text-[#687076] 
+                data-[state=active]:text-[#11181C] data-[state=active]:border-b-2 data-[state=active]:border-[#FFC043]
+                hover:text-[#11181C] transition-all duration-150 rounded-none
+                bg-transparent
+              "
+            >
+              extraction_jobs()
+            </TabsTrigger>
+            <TabsTrigger
+              value="list"
+              className="
+                px-6 py-3 text-sm font-mono text-[#687076] 
+                data-[state=active]:text-[#11181C] data-[state=active]:border-b-2 data-[state=active]:border-[#FFC043]
+                hover:text-[#11181C] transition-all duration-150 rounded-none
+                bg-transparent
+              "
+            >
+              extracted_data()
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent
             value="setup"
-            className="flex-1 text-purple-800 font-medium data-[state=active]:bg-purple-100 data-[state=active]:shadow-inner rounded-xl py-3 transition-all"
+            className="mt-0 focus-visible:outline-none"
           >
-            🛠 Setup Data Source
-          </TabsTrigger>
-          <TabsTrigger
-            value="jobs"
-            className="flex-1 text-purple-800 font-medium data-[state=active]:bg-purple-100 data-[state=active]:shadow-inner rounded-xl py-3 transition-all"
-          >
-            📆 Extraction Jobs
-          </TabsTrigger>
-          <TabsTrigger
-            value="list"
-            className="flex-1 text-purple-800 font-medium data-[state=active]:bg-purple-100 data-[state=active]:shadow-inner rounded-xl py-3 transition-all"
-          >
-            📄 Extracted List
-          </TabsTrigger>
-        </TabsList>
+            <div className="border border-[#E6E8EA] bg-white">
+              <div className="border-b border-[#E6E8EA] px-6 py-3 bg-[#F8F9FA]">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]"></div>
+                  <span className="ml-2 text-xs font-mono text-[#687076]">
+                    autoflow/source_config — zsh
+                  </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <ExtractionDestinationConfig />
+              </div>
+            </div>
+          </TabsContent>
 
-        <TabsContent value="setup">
-          <div className="rounded-2xl border border-purple-100 bg-white p-6 shadow-sm transition-all">
-            <ExtractionDestinationConfig />
-          </div>
-        </TabsContent>
+          <TabsContent value="jobs" className="mt-0 focus-visible:outline-none">
+            <div className="border border-[#E6E8EA] bg-white">
+              <div className="border-b border-[#E6E8EA] px-6 py-3 bg-[#F8F9FA]">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]"></div>
+                  <span className="ml-2 text-xs font-mono text-[#687076]">
+                    autoflow/extraction_jobs — zsh
+                  </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="mb-6">
+                  <h2 className="text-base font-mono font-semibold text-[#11181C] mb-1">
+                    active_jobs()
+                  </h2>
+                  <p className="text-xs text-[#687076] font-mono">
+                    monitor and manage scheduled or running data extraction jobs
+                  </p>
+                </div>
+                <TasksTable />
+              </div>
+            </div>
+          </TabsContent>
 
-        <TabsContent value="jobs">
-          <div className="p-6 rounded-2xl bg-white border border-purple-100 text-purple-700 shadow-md transition-all">
-            <h2 className="text-xl font-semibold mb-2">
-              📋 Active & Scheduled Jobs
-            </h2>
-            <p className="text-sm text-purple-500 mb-4">
-              Monitor and manage your scheduled or running data extraction jobs.
-            </p>
-            <TasksTable />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="list">
-          <div className="p-6 rounded-2xl bg-white border border-purple-100 text-purple-700 shadow transition-all">
-            <h2 className="text-xl font-semibold mb-2">
-              🏢 Extracted Companies
-            </h2>
-            <p className="text-sm text-purple-500 mb-4">
-              View and manage companies fetched from the selected data sources.
-            </p>
-            <ExtractedListViewer />
-          </div>
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="list" className="mt-0 focus-visible:outline-none">
+            <div className="border border-[#E6E8EA] bg-white">
+              <div className="border-b border-[#E6E8EA] px-6 py-3 bg-[#F8F9FA]">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F]"></div>
+                  <span className="ml-2 text-xs font-mono text-[#687076]">
+                    autoflow/extracted_data — zsh
+                  </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="mb-6">
+                  <h2 className="text-base font-mono font-semibold text-[#11181C] mb-1">
+                    extracted_companies()
+                  </h2>
+                  <p className="text-xs text-[#687076] font-mono">
+                    view and manage companies fetched from selected data sources
+                  </p>
+                </div>
+                <ExtractedListViewer />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

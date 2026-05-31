@@ -2,27 +2,15 @@
 import axiosInstance from "@/lib/axiosInstance";
 import { HttpStatusCode } from "axios";
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { setUser } from "../../store/userSlice";
-import { 
-  Mail, 
-  User, 
-  Key, 
-  ArrowRight, 
-  Shield, 
-  CheckCircle2,
-  Sparkles,
-  X,
-  RefreshCw,
-  LogIn
-} from "lucide-react";
+import { X, ArrowRight, CheckCircle } from "lucide-react";
 
 const Spinner = () => (
   <svg
-    className="animate-spin h-5 w-5 text-white inline-block"
+    className="animate-spin h-4 w-4 text-[#FFC043] inline-block"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
@@ -43,37 +31,86 @@ const Spinner = () => (
   </svg>
 );
 
+const BlinkingCursor = () => {
+  const [isVisible, setIsVisible] = useState(true);
+  useEffect(() => {
+    const interval = setInterval(() => setIsVisible((v) => !v), 530);
+    return () => clearInterval(interval);
+  }, []);
+  return (
+    <span
+      className={`${isVisible ? "opacity-100" : "opacity-0"} transition-opacity duration-100`}
+    >
+      _
+    </span>
+  );
+};
+
 export default function SignUpModal({ showModal, onClose, onLoginClick }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-
   const [loadingSendOtp, setLoadingSendOtp] = useState(false);
   const [loadingVerifyOtp, setLoadingVerifyOtp] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
+
+  const usernameInputRef = useRef(null);
+  const emailInputRef = useRef(null);
+  const otpInputRef = useRef(null);
 
   const dispatch = useDispatch();
 
+  // Auto-focus first field when modal opens
   useEffect(() => {
-    return () => {
-      setUsername("");
-      setEmail("");
-      setOtp("");
-      setOtpSent(false);
-      setLoadingSendOtp(false);
-      setLoadingVerifyOtp(false);
-    };
+    if (showModal && usernameInputRef.current) {
+      setTimeout(() => usernameInputRef.current?.focus(), 100);
+    }
+  }, [showModal]);
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!showModal) {
+      const resetTimer = setTimeout(() => {
+        setUsername("");
+        setEmail("");
+        setOtp("");
+        setOtpSent(false);
+        setLoadingSendOtp(false);
+        setLoadingVerifyOtp(false);
+        setFocusedField(null);
+      }, 300);
+      return () => clearTimeout(resetTimer);
+    }
   }, [showModal]);
 
   const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
+    if (e.target === e.currentTarget && !loadingSendOtp && !loadingVerifyOtp) {
       onClose();
     }
   };
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
-    if (!email) return;
+
+    if (!username) {
+      toast.error("Please enter a username");
+      usernameInputRef.current?.focus();
+      return;
+    }
+
+    if (!email) {
+      toast.error("Please enter your email address");
+      emailInputRef.current?.focus();
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address");
+      emailInputRef.current?.focus();
+      return;
+    }
 
     setLoadingSendOtp(true);
     try {
@@ -85,6 +122,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
       if (response.status === HttpStatusCode.Ok && response.data.success) {
         toast.success(response.data.message);
         setOtpSent(true);
+        setTimeout(() => otpInputRef.current?.focus(), 100);
       }
     } catch (error) {
       console.log(error);
@@ -96,6 +134,12 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+
+    if (!otp || otp.length !== 6) {
+      toast.error("Please enter a valid 6-digit OTP");
+      otpInputRef.current?.focus();
+      return;
+    }
 
     setLoadingVerifyOtp(true);
     try {
@@ -112,7 +156,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
         localStorage?.setItem("email", email);
         localStorage?.setItem("role", role);
         dispatch(setUser({ email, role, username, isLoggedIn: true }));
-        toast.success("Logged-in successfully");
+        toast.success("Account created successfully!");
         onClose();
       }
     } catch (error) {
@@ -123,220 +167,297 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
     }
   };
 
-  const inputClasses = "w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all text-gray-700 placeholder-gray-400 bg-gray-50 hover:bg-white";
+  const handleResendOtp = async () => {
+    if (loadingSendOtp) return;
+
+    setLoadingSendOtp(true);
+    try {
+      const response = await axiosInstance.post("/auth/send-otp", {
+        username,
+        email,
+      });
+
+      if (response.status === HttpStatusCode.Ok && response.data.success) {
+        toast.success("OTP resent successfully!");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.error || "Failed to resend OTP");
+    } finally {
+      setLoadingSendOtp(false);
+    }
+  };
 
   return (
     <AnimatePresence>
       {showModal && (
         <motion.div
           onClick={handleBackdropClick}
-          className="fixed inset-0 bg-gradient-to-br from-black/40 via-black/30 to-purple-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#11181C]/60 p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          transition={{
+            duration: 0.2,
+            ease: [0.2, 0.9, 0.4, 1.1],
+          }}
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
-            className="h-full bg-white rounded-3xl shadow-2xl w-full max-w-md relative overflow-hidden"
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="w-full max-w-md bg-white border border-[#E6E8EA] shadow-xl"
+            initial={{
+              opacity: 0,
+              y: 8,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
             exit={{
               opacity: 0,
-              scale: 0.95,
-              y: 20,
-              transition: { duration: 0.3, ease: "easeInOut" },
+              y: 8,
             }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            transition={{
+              duration: 0.2,
+              ease: [0.2, 0.9, 0.4, 1.1],
+            }}
           >
-           
-            
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-all z-10 cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
             {/* Header */}
-            <div className="p-8 pb-4">
-              <div className="flex items-center justify-center mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-200">
-                  <Sparkles className="w-8 h-8 text-white" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold text-center text-gray-800 mb-1">
-                Create your account
-              </h3>
-              <p className="text-center text-gray-500 text-sm mb-6">
-                Start your journey with us today
-              </p>
+            <div className="relative px-8 pt-8 pb-6 border-b border-[#E6E8EA]">
+              <button
+                onClick={onClose}
+                disabled={loadingSendOtp || loadingVerifyOtp}
+                className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center text-[#687076] hover:text-[#11181C] transition-colors duration-150"
+              >
+                <X size={16} />
+              </button>
 
-              {/* Steps indicator */}
-              <div className="flex items-center justify-center gap-2 mb-8">
-                <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  !otpSent 
-                    ? 'bg-purple-100 text-purple-700' 
-                    : 'bg-green-100 text-green-700'
-                }`}>
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  {otpSent ? 'Details' : 'Enter Details'}
-                </div>
-                <div className="w-8 h-0.5 bg-gray-200" />
-                <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
-                  otpSent 
-                    ? 'bg-purple-100 text-purple-700' 
-                    : 'bg-gray-100 text-gray-400'
-                }`}>
-                  <Shield className="w-3.5 h-3.5" />
-                  Verify OTP
-                </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-4 border border-[#E6E8EA]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043]"></span>
+                ACCOUNT
               </div>
+
+              <h2 className="text-3xl font-bold tracking-tighter text-[#11181C]">
+                autoflow.signup()
+              </h2>
+
+              <p className="mt-2 text-sm text-[#687076] font-mono">
+                Start importing leads, enriching companies, and automating
+                outreach.
+              </p>
             </div>
 
             {/* Form */}
-            <div className="px-8 pb-8">
-              <form className="space-y-4" onSubmit={handleSendOtp}>
-                {/* Username field */}
-                <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <div className="px-8 pb-8 pt-6">
+              <form className="space-y-4">
+                {/* Username Field */}
+                <div>
+                  <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                    USERNAME
+                  </label>
                   <input
+                    ref={usernameInputRef}
                     type="text"
-                    placeholder="Username"
+                    placeholder="johndoe"
                     value={username}
-                    className={inputClasses}
+                    disabled={otpSent || loadingSendOtp || loadingVerifyOtp}
+                    onFocus={() => setFocusedField("username")}
+                    onBlur={() => setFocusedField(null)}
                     onChange={(e) => setUsername(e.target.value)}
+                    className={`
+                      w-full px-4 py-3 bg-white border font-mono text-sm outline-none transition-all duration-150
+                      ${
+                        focusedField === "username"
+                          ? "border-[#FFC043] ring-1 ring-[#FFC043]/20"
+                          : "border-[#E6E8EA] hover:border-[#1E2A3A]"
+                      }
+                      ${otpSent || loadingSendOtp || loadingVerifyOtp ? "bg-[#F8F9FA] text-[#687076] cursor-not-allowed" : ""}
+                    `}
                   />
                 </div>
 
-                {/* Email field */}
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                {/* Email Field */}
+                <div>
+                  <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                    EMAIL ADDRESS
+                  </label>
                   <input
+                    ref={emailInputRef}
                     type="email"
-                    placeholder="Email address"
+                    placeholder="user@company.com"
                     value={email}
-                    className={inputClasses}
+                    disabled={otpSent || loadingSendOtp || loadingVerifyOtp}
+                    onFocus={() => setFocusedField("email")}
+                    onBlur={() => setFocusedField(null)}
                     onChange={(e) => setEmail(e.target.value)}
+                    className={`
+                      w-full px-4 py-3 bg-white border font-mono text-sm outline-none transition-all duration-150
+                      ${
+                        focusedField === "email"
+                          ? "border-[#FFC043] ring-1 ring-[#FFC043]/20"
+                          : "border-[#E6E8EA] hover:border-[#1E2A3A]"
+                      }
+                      ${otpSent || loadingSendOtp || loadingVerifyOtp ? "bg-[#F8F9FA] text-[#687076] cursor-not-allowed" : ""}
+                    `}
                   />
                 </div>
 
-                {/* OTP field with animation */}
+                {/* OTP Field - Animated */}
                 <AnimatePresence>
                   {otpSent && (
                     <motion.div
-                      initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-                      animate={{ opacity: 1, height: 'auto', marginBottom: 16 }}
-                      exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                      transition={{ duration: 0.3 }}
+                      initial={{
+                        opacity: 0,
+                        height: 0,
+                        marginTop: 0,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        height: "auto",
+                        marginTop: 16,
+                      }}
+                      exit={{
+                        opacity: 0,
+                        height: 0,
+                        marginTop: 0,
+                      }}
+                      transition={{
+                        duration: 0.2,
+                        ease: [0.2, 0.9, 0.4, 1.1],
+                      }}
                     >
-                      <div className="relative">
-                        <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                          type="text"
-                          placeholder="Enter OTP code"
-                          value={otp}
-                          className={inputClasses}
-                          onChange={(e) => setOtp(e.target.value)}
-                          maxLength={6}
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                          <Shield className="w-5 h-5 text-purple-400" />
-                        </div>
+                      <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                        VERIFICATION CODE
+                      </label>
+                      <input
+                        ref={otpInputRef}
+                        type="text"
+                        placeholder="000000"
+                        value={otp}
+                        maxLength={6}
+                        onFocus={() => setFocusedField("otp")}
+                        onBlur={() => setFocusedField(null)}
+                        onChange={(e) =>
+                          setOtp(
+                            e.target.value.replace(/[^0-9]/g, "").slice(0, 6),
+                          )
+                        }
+                        className={`
+                          w-full px-4 py-3 bg-white border font-mono text-center text-lg tracking-[0.3em] outline-none transition-all duration-150
+                          ${
+                            focusedField === "otp"
+                              ? "border-[#FFC043] ring-1 ring-[#FFC043]/20"
+                              : "border-[#E6E8EA] hover:border-[#1E2A3A]"
+                          }
+                        `}
+                      />
+                      <div className="mt-2 flex items-center gap-2 text-xs font-mono text-[#687076]">
+                        <CheckCircle className="w-3 h-3 text-[#FFC043]" />
+                        <span>Code sent to {email}</span>
                       </div>
-                      <p className="text-xs text-gray-400 mt-2 text-center">
-                        Enter the 6-digit code sent to your email
-                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* Action buttons */}
-                <div className="space-y-3 pt-2">
-                  {!otpSent ? (
+                {/* Action Buttons */}
+                {!otpSent ? (
+                  <button
+                    type="button"
+                    onClick={handleSendOtp}
+                    disabled={loadingSendOtp || !username || !email}
+                    className="
+                      group relative w-full mt-6 px-6 py-3 bg-[#11181C] text-white font-mono text-sm
+                      hover:bg-[#FFC043] hover:text-[#11181C] transition-all duration-150
+                      disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#11181C] disabled:hover:text-white
+                      flex items-center justify-center gap-2
+                    "
+                  >
+                    {loadingSendOtp ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Spinner />
+                        sending...
+                      </span>
+                    ) : (
+                      <>
+                        <span>autoflow.send_otp()</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-150" />
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <div className="space-y-3 mt-6">
                     <button
-                      type="button"
-                      onClick={handleSendOtp}
-                      className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2 font-medium shadow-lg shadow-purple-200 hover:shadow-xl hover:shadow-purple-300 transform hover:-translate-y-0.5"
-                      disabled={loadingSendOtp}
+                      type="submit"
+                      onClick={handleVerifyOtp}
+                      disabled={loadingVerifyOtp || !otp || otp.length !== 6}
+                      className="
+                        w-full px-6 py-3 bg-[#11181C] text-white font-mono text-sm
+                        hover:bg-[#FFC043] hover:text-[#11181C] transition-all duration-150
+                        disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#11181C] disabled:hover:text-white
+                        flex items-center justify-center gap-2
+                      "
                     >
-                      {loadingSendOtp ? (
-                        <>
-                          <Spinner /> Sending OTP...
-                        </>
+                      {loadingVerifyOtp ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <Spinner />
+                          creating...
+                        </span>
                       ) : (
                         <>
-                          <Mail className="w-5 h-5" />
-                          Send OTP
+                          <span>autoflow.create()</span>
+                          <ArrowRight className="w-4 h-4" />
                         </>
                       )}
                     </button>
-                  ) : (
-                    <>
-                      <button
-                        onClick={handleVerifyOtp}
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2 font-medium shadow-lg shadow-purple-200 hover:shadow-xl hover:shadow-purple-300 transform hover:-translate-y-0.5"
-                        disabled={loadingVerifyOtp}
-                      >
-                        {loadingVerifyOtp ? (
-                          <>
-                            <Spinner /> Creating Account...
-                          </>
-                        ) : (
-                          <>
-                            <CheckCircle2 className="w-5 h-5" />
-                            Create Account
-                          </>
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleSendOtp}
-                        className="w-full text-purple-600 hover:text-purple-700 py-2.5 rounded-xl border-2 border-purple-200 hover:border-purple-300 hover:bg-purple-50 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm font-medium"
-                        disabled={loadingSendOtp}
-                      >
-                        {loadingSendOtp ? (
-                          <>
-                            <Spinner /> Resending...
-                          </>
-                        ) : (
-                          <>
-                            <RefreshCw className="w-4 h-4" />
-                            Resend OTP
-                          </>
-                        )}
-                      </button>
-                    </>
-                  )}
-                </div>
+
+                    <button
+                      type="button"
+                      onClick={handleResendOtp}
+                      disabled={loadingSendOtp}
+                      className="
+                        w-full px-6 py-3 border border-[#E6E8EA] bg-white text-[#687076] font-mono text-sm
+                        hover:border-[#1E2A3A] hover:text-[#11181C] transition-all duration-150
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                      "
+                    >
+                      {loadingSendOtp ? "sending..." : "autoflow.resend()"}
+                    </button>
+                  </div>
+                )}
               </form>
 
-              {/* Footer */}
-              <div className="mt-8 text-center">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200"></div>
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="px-4 bg-white text-sm text-gray-400">
-                      Already have an account?
-                    </span>
-                  </div>
-                </div>
-                
+              {/* Footer - Login Link */}
+              <div className="mt-8 pt-6 border-t border-[#E6E8EA] text-center">
+                <p className="text-xs font-mono text-[#687076] mb-2">
+                  ALREADY HAVE AN ACCOUNT?
+                </p>
                 <button
                   onClick={() => {
                     onClose();
                     onLoginClick();
                   }}
-                  className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl border-2 border-gray-200 hover:border-purple-200 text-gray-700 hover:text-purple-700 transition-all font-medium group"
+                  className="
+                    group text-sm font-mono text-[#1E2A3A] hover:text-[#FFC043] transition-colors duration-150
+                    flex items-center justify-center gap-1 mx-auto
+                  "
                 >
-                  <LogIn className="w-5 h-5 group-hover:text-purple-600 transition-colors" />
-                  Sign in to your account
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <span>autoflow.login()</span>
+                  <span className="group-hover:translate-x-0.5 transition-transform duration-150">
+                    →
+                  </span>
                 </button>
+              </div>
+            </div>
+
+            {/* Command line decoration */}
+            <div className="px-8 pb-6 pt-2 border-t border-[#F8F9FA] bg-[#F8F9FA]">
+              <div className="flex items-center gap-2 font-mono text-xs text-[#687076]">
+                <span className="text-[#FFC043]">$</span>
+                <span>autoflow --signup</span>
+                <BlinkingCursor />
+              </div>
+              <div className="flex items-center gap-2 font-mono text-[11px] text-[#687076] mt-1 pl-3">
+                <span>→ v2.0.0 / ready</span>
               </div>
             </div>
           </motion.div>

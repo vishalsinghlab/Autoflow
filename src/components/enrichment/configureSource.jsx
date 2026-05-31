@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Info, Loader2 } from "lucide-react";
+import { Info, Loader2, ArrowRight, Database } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -28,10 +28,8 @@ export default function EnrichmentSourceConfiguaration() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-
   const [extractionJobs, setExtractionJobs] = useState([]);
   const [selectedList, setSelectedList] = useState(null);
-
   const [credentialsModalOpen, setCredentialsModalOpen] = useState(false);
   const [savedCredentials, setSavedCredentials] = useState({});
 
@@ -74,7 +72,7 @@ export default function EnrichmentSourceConfiguaration() {
       console.error("Error", error.message);
       toast.error(error.message || "Something went wrong.");
     } finally {
-      setLoading(false); // ✅ End loading
+      setLoading(false);
     }
   };
 
@@ -94,124 +92,152 @@ export default function EnrichmentSourceConfiguaration() {
     setSelectedList(list);
   };
 
+  const resetConfig = () => {
+    setSource("");
+    setFormValues({});
+    setSelectedList(null);
+    setSuccessMsg("");
+    setErrorMsg("");
+  };
+
   return (
     <TooltipProvider>
-      <div className="bg-purple-50 p-8 rounded-2xl shadow-lg w-full border border-purple-100">
-        <div className="flex items-center gap-2 mb-6">
-          <h2 className="text-2xl font-bold text-purple-800">
-            Configure Data Source
-          </h2>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info className="w-5 h-5 text-purple-600 cursor-pointer" />
-            </TooltipTrigger>
-            <TooltipContent
-              side="right"
-              className="bg-white shadow-lg border text-sm p-3 text-purple-800 max-w-sm"
-            >
-              Select the platform from which to fetch enriched people data.
-              After selecting, provide the required credentials and specify your
-              preferences.
-            </TooltipContent>
-          </Tooltip>
-        </div>
+      <div className="w-full">
+        {/* Name Field */}
         <div className="mb-6">
-          <Label htmlFor="name" className="text-sm text-purple-800 mb-1 block">
-            Name
-          </Label>
-          <Input
-            id="name"
-            placeholder="Enter a name for this extraction list"
+          <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+            extraction_name()
+          </label>
+          <input
+            type="text"
+            placeholder="e.g., enriched_companies_2025"
             value={formValues.name || ""}
             onChange={(e) => handleInputChange("name", e.target.value)}
-            className="w-[300px] border-purple-200 text-purple-700 bg-white focus:ring-2 focus:ring-purple-300"
+            className="w-full max-w-sm px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
           />
         </div>
 
-        <div className="mb-4">
-          <h3 className="text-lg font-bold text-purple-800 mb-2">
-            Select a List
-          </h3>
-          <Select onValueChange={handleListSelection}>
-            <SelectTrigger className="w-[250px] bg-white border-purple-200 text-purple-700">
-              <SelectValue placeholder="Choose a list" />
-            </SelectTrigger>
-            <SelectContent>
-              {extractionJobs.map((list) => (
-                <SelectItem key={list.id} value={list}>
-                  {list.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
+        {/* Select List */}
         <div className="mb-6">
-          <Label className="text-sm text-purple-800 mb-1 block">
-            Select Source
-          </Label>
-          <Select onValueChange={(val) => setSource(val)}>
-            <SelectTrigger className="bg-white border-purple-200 text-purple-700 w-[250px] focus:ring-2 focus:ring-purple-300">
-              <SelectValue placeholder="Choose a source" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="apollo">Apollo.io</SelectItem>
-              <SelectItem value="magiclead">Magic Lead</SelectItem>
-              <SelectItem value="salesql">SalesQL</SelectItem>
-            </SelectContent>
-          </Select>
+          <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+            select_list()
+          </label>
+          <select
+            onChange={(e) => handleListSelection(e.target.value)}
+            className="w-full max-w-sm px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+          >
+            <option value="">choose_list</option>
+            {extractionJobs.map((list) => (
+              <option key={list.id} value={list}>
+                {list.name}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <CredentialsModal
-          open={credentialsModalOpen}
-          onOpenChange={setCredentialsModalOpen}
-          source={source}
-          onSave={(creds) => {
-            setSavedCredentials((prev) => ({ ...prev, [source]: creds }));
-            setFormValues((prev) => ({ ...prev, ...creds }));
-          }}
-        />
+        {/* Select Source */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-1.5">
+            <label className="block text-xs font-mono text-[#687076] uppercase tracking-wider">
+              data_source()
+            </label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-3.5 h-3.5 text-[#687076] cursor-pointer hover:text-[#FFC043] transition-colors duration-150" />
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="bg-[#11181C] text-white border-none rounded-none font-mono text-xs p-3"
+              >
+                select the platform from which to fetch enriched people data
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <select
+            value={source}
+            onChange={(e) => setSource(e.target.value)}
+            className="w-full max-w-sm px-3 py-2 bg-white border border-[#E6E8EA] font-mono text-sm outline-none transition-all duration-150 focus:border-[#FFC043] focus:ring-1 focus:ring-[#FFC043]/20 hover:border-[#1E2A3A]"
+          >
+            <option value="">choose_source</option>
+            <option value="apollo">apollo.io</option>
+            <option value="magiclead">magic_lead</option>
+            <option value="salesql">salesql</option>
+          </select>
+        </div>
 
-        <Button
-          className="bg-purple-200 text-purple-800 hover:bg-purple-600 hover:text-[white]"
-          onClick={() => setCredentialsModalOpen(true)}
-        >
-          Manage Credentials
-        </Button>
+        {/* Credentials Button */}
+        <div className="mb-8">
+          <button
+            onClick={() => setCredentialsModalOpen(true)}
+            className="px-4 py-2 border border-[#E6E8EA] bg-white text-[#687076] font-mono text-sm hover:border-[#FFC043] hover:text-[#11181C] transition-all duration-150 flex items-center gap-2"
+          >
+            <Database className="w-3.5 h-3.5" />
+            manage_credentials()
+          </button>
+        </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-4">
-          <Button
-            className="bg-purple-600 hover:bg-purple-700 text-white transition-colors"
+        {/* Action Buttons */}
+        <div className="flex gap-3 pt-4 border-t border-[#E6E8EA]">
+          <button
             onClick={handleSubmit}
             disabled={loading}
+            className="group px-5 py-2 bg-[#11181C] text-white font-mono text-sm hover:bg-[#FFC043] hover:text-[#11181C] transition-all duration-150 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="animate-spin w-4 h-4" />
-                Encriching...
-              </div>
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>enriching...</span>
+              </>
             ) : (
-              "Start"
+              <>
+                <span>enrich.run()</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform duration-150" />
+              </>
             )}
-          </Button>
-          <Button
-            variant="outline"
-            className="border-purple-300 text-purple-600 hover:bg-purple-100"
-            onClick={() => {
-              setSource("");
-              setFormValues({});
-              setLimit("");
-              setSuccessMsg("");
-              setErrorMsg("");
-            }}
+          </button>
+          <button
+            onClick={resetConfig}
+            className="px-5 py-2 border border-[#E6E8EA] bg-white text-[#687076] font-mono text-sm hover:border-[#1E2A3A] hover:text-[#11181C] transition-all duration-150"
           >
-            Cancel
-          </Button>
+            reset()
+          </button>
         </div>
 
-        {successMsg && <p className="text-green-600 mt-4">{successMsg}</p>}
-        {errorMsg && <p className="text-red-600 mt-4">{errorMsg}</p>}
+        {/* Status Messages */}
+        {successMsg && (
+          <div className="mt-4 p-3 border border-[#27C93F]/20 bg-[#27C93F]/5">
+            <p className="text-xs font-mono text-[#27C93F]">{successMsg}</p>
+          </div>
+        )}
+        {errorMsg && (
+          <div className="mt-4 p-3 border border-[#FF5F56]/20 bg-[#FF5F56]/5">
+            <p className="text-xs font-mono text-[#FF5F56]">{errorMsg}</p>
+          </div>
+        )}
+
+        {/* Empty State Hint */}
+        {!source && !selectedList && (
+          <div className="mt-6 pt-4 border-t border-[#E6E8EA]">
+            <div className="flex items-center gap-2 text-xs font-mono text-[#687076]">
+              <span className="text-[#FFC043]">→</span>
+              <span>
+                select a source and list to configure enrichment parameters
+              </span>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Credentials Modal */}
+      <CredentialsModal
+        open={credentialsModalOpen}
+        onOpenChange={setCredentialsModalOpen}
+        source={source}
+        onSave={(creds) => {
+          setSavedCredentials((prev) => ({ ...prev, [source]: creds }));
+          setFormValues((prev) => ({ ...prev, ...creds }));
+        }}
+      />
     </TooltipProvider>
   );
 }
