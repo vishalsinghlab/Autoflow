@@ -193,7 +193,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
       {showModal && (
         <motion.div
           onClick={handleBackdropClick}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#11181C]/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#11181C]/60 p-4 overflow-y-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -204,7 +204,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-white border border-[#E6E8EA] shadow-xl"
+            className="relative w-full max-w-md my-8 bg-white border border-[#E6E8EA] shadow-xl overflow-y-auto max-h-[calc(100vh-2rem)]"
             initial={{
               opacity: 0,
               y: 8,
@@ -222,37 +222,37 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
               ease: [0.2, 0.9, 0.4, 1.1],
             }}
           >
-            {/* Header */}
-            <div className="relative px-8 pt-8 pb-6 border-b border-[#E6E8EA]">
+            {/* Header - sticky for better UX on scroll */}
+            <div className="sticky top-0 z-10 bg-white px-6 pt-6 pb-4 border-b border-[#E6E8EA]">
               <button
                 onClick={onClose}
                 disabled={loadingSendOtp || loadingVerifyOtp}
-                className="absolute right-5 top-5 flex h-8 w-8 items-center justify-center text-[#687076] hover:text-[#11181C] transition-colors duration-150"
+                className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center text-[#687076] hover:text-[#11181C] transition-colors duration-150"
               >
                 <X size={16} />
               </button>
 
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-4 border border-[#E6E8EA]">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-3 border border-[#E6E8EA]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043]"></span>
                 ACCOUNT
               </div>
 
-              <h2 className="text-3xl font-bold tracking-tighter text-[#11181C]">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tighter text-[#11181C]">
                 autoflow.signup()
               </h2>
 
-              <p className="mt-2 text-sm text-[#687076] font-mono">
+              <p className="mt-1 text-xs sm:text-sm text-[#687076] font-mono">
                 Start importing leads, enriching companies, and automating
                 outreach.
               </p>
             </div>
 
-            {/* Form */}
-            <div className="px-8 pb-8 pt-6">
+            {/* Form - scrollable content */}
+            <div className="px-6 pb-4 pt-4">
               <form className="space-y-4">
                 {/* Username Field */}
                 <div>
-                  <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                  <label className="block text-[10px] font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
                     USERNAME
                   </label>
                   <input
@@ -265,7 +265,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
                     onBlur={() => setFocusedField(null)}
                     onChange={(e) => setUsername(e.target.value)}
                     className={`
-                      w-full px-4 py-3 bg-white border font-mono text-sm outline-none transition-all duration-150
+                      w-full px-3 py-2.5 bg-white border font-mono text-sm outline-none transition-all duration-150
                       ${
                         focusedField === "username"
                           ? "border-[#FFC043] ring-1 ring-[#FFC043]/20"
@@ -278,7 +278,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
 
                 {/* Email Field */}
                 <div>
-                  <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                  <label className="block text-[10px] font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
                     EMAIL ADDRESS
                   </label>
                   <input
@@ -291,7 +291,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
                     onBlur={() => setFocusedField(null)}
                     onChange={(e) => setEmail(e.target.value)}
                     className={`
-                      w-full px-4 py-3 bg-white border font-mono text-sm outline-none transition-all duration-150
+                      w-full px-3 py-2.5 bg-white border font-mono text-sm outline-none transition-all duration-150
                       ${
                         focusedField === "email"
                           ? "border-[#FFC043] ring-1 ring-[#FFC043]/20"
@@ -326,7 +326,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
                         ease: [0.2, 0.9, 0.4, 1.1],
                       }}
                     >
-                      <label className="block text-xs font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
+                      <label className="block text-[10px] font-mono text-[#687076] mb-1.5 uppercase tracking-wider">
                         VERIFICATION CODE
                       </label>
                       <input
@@ -343,7 +343,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
                           )
                         }
                         className={`
-                          w-full px-4 py-3 bg-white border font-mono text-center text-lg tracking-[0.3em] outline-none transition-all duration-150
+                          w-full px-3 py-2.5 bg-white border font-mono text-center text-base tracking-[0.3em] outline-none transition-all duration-150
                           ${
                             focusedField === "otp"
                               ? "border-[#FFC043] ring-1 ring-[#FFC043]/20"
@@ -351,9 +351,9 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
                           }
                         `}
                       />
-                      <div className="mt-2 flex items-center gap-2 text-xs font-mono text-[#687076]">
+                      <div className="mt-2 flex items-center gap-2 text-[10px] font-mono text-[#687076]">
                         <CheckCircle className="w-3 h-3 text-[#FFC043]" />
-                        <span>Code sent to {email}</span>
+                        <span className="truncate">Code sent to {email}</span>
                       </div>
                     </motion.div>
                   )}
@@ -366,10 +366,10 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
                     onClick={handleSendOtp}
                     disabled={loadingSendOtp || !username || !email}
                     className="
-                      group relative w-full mt-6 px-6 py-3 bg-[#11181C] text-white font-mono text-sm
+                      group relative w-full mt-4 px-5 py-2.5 bg-[#11181C] text-white font-mono text-sm
                       hover:bg-[#FFC043] hover:text-[#11181C] transition-all duration-150
                       disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#11181C] disabled:hover:text-white
-                      flex items-center justify-center gap-2
+                      flex items-center justify-center gap-2 min-h-[44px]
                     "
                   >
                     {loadingSendOtp ? (
@@ -385,16 +385,16 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
                     )}
                   </button>
                 ) : (
-                  <div className="space-y-3 mt-6">
+                  <div className="space-y-3 mt-4">
                     <button
                       type="submit"
                       onClick={handleVerifyOtp}
                       disabled={loadingVerifyOtp || !otp || otp.length !== 6}
                       className="
-                        w-full px-6 py-3 bg-[#11181C] text-white font-mono text-sm
+                        w-full px-5 py-2.5 bg-[#11181C] text-white font-mono text-sm
                         hover:bg-[#FFC043] hover:text-[#11181C] transition-all duration-150
                         disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#11181C] disabled:hover:text-white
-                        flex items-center justify-center gap-2
+                        flex items-center justify-center gap-2 min-h-[44px]
                       "
                     >
                       {loadingVerifyOtp ? (
@@ -415,9 +415,9 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
                       onClick={handleResendOtp}
                       disabled={loadingSendOtp}
                       className="
-                        w-full px-6 py-3 border border-[#E6E8EA] bg-white text-[#687076] font-mono text-sm
+                        w-full px-5 py-2.5 border border-[#E6E8EA] bg-white text-[#687076] font-mono text-sm
                         hover:border-[#1E2A3A] hover:text-[#11181C] transition-all duration-150
-                        disabled:opacity-50 disabled:cursor-not-allowed
+                        disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]
                       "
                     >
                       {loadingSendOtp ? "sending..." : "autoflow.resend()"}
@@ -427,8 +427,8 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
               </form>
 
               {/* Footer - Login Link */}
-              <div className="mt-8 pt-6 border-t border-[#E6E8EA] text-center">
-                <p className="text-xs font-mono text-[#687076] mb-2">
+              <div className="mt-6 pt-5 border-t border-[#E6E8EA] text-center">
+                <p className="text-[10px] font-mono text-[#687076] mb-2 uppercase tracking-wider">
                   ALREADY HAVE AN ACCOUNT?
                 </p>
                 <button
@@ -438,7 +438,7 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
                   }}
                   className="
                     group text-sm font-mono text-[#1E2A3A] hover:text-[#FFC043] transition-colors duration-150
-                    flex items-center justify-center gap-1 mx-auto
+                    flex items-center justify-center gap-1 mx-auto min-h-[44px] px-3
                   "
                 >
                   <span>autoflow.login()</span>
@@ -449,14 +449,14 @@ export default function SignUpModal({ showModal, onClose, onLoginClick }) {
               </div>
             </div>
 
-            {/* Command line decoration */}
-            <div className="px-8 pb-6 pt-2 border-t border-[#F8F9FA] bg-[#F8F9FA]">
-              <div className="flex items-center gap-2 font-mono text-xs text-[#687076]">
+            {/* Command line decoration - sticky bottom */}
+            <div className="sticky bottom-0 z-10 px-6 py-3 border-t border-[#F8F9FA] bg-[#F8F9FA]">
+              <div className="flex items-center gap-2 font-mono text-[10px] sm:text-xs text-[#687076]">
                 <span className="text-[#FFC043]">$</span>
-                <span>autoflow --signup</span>
+                <span className="truncate">autoflow --signup</span>
                 <BlinkingCursor />
               </div>
-              <div className="flex items-center gap-2 font-mono text-[11px] text-[#687076] mt-1 pl-3">
+              <div className="flex items-center gap-2 font-mono text-[9px] sm:text-[11px] text-[#687076] mt-0.5 pl-3">
                 <span>→ v2.0.0 / ready</span>
               </div>
             </div>

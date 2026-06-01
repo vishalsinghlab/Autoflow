@@ -1,3 +1,6 @@
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+
 export const metadata = {
   title: "Contact | AutoFlow",
   description:
@@ -28,6 +31,18 @@ const contacts = [
 export default function ContactPage() {
   return (
     <main className="min-h-screen bg-white">
+      {/* Navigation Bar */}
+      <div className="sticky top-0 z-10 bg-white border-b border-[#E6E8EA]">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-mono text-[#687076] hover:text-[#11181C] transition-colors duration-150 group"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-150" />
+            <span>back()</span>
+          </Link>
+        </div>
+      </div>
       {/* Hero Section */}
       <section className="border-b border-[#E6E8EA]">
         <div className="max-w-7xl mx-auto px-6 py-32">

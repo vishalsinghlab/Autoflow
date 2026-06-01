@@ -1,3 +1,7 @@
+// app/terms/page.tsx
+import { ArrowLeft, Scale, FileText, Shield, Zap } from "lucide-react";
+import Link from "next/link";
+
 export const metadata = {
   title: "Terms of Service | AutoFlow",
   description:
@@ -100,104 +104,250 @@ const sections = [
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white selection:bg-black selection:text-white">
+      {/* Navigation */}
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-black/5">
+        <div className="max-w-7xl mx-auto px-8 py-5">
+          <Link
+            href="/"
+            className="group inline-flex items-center gap-2 text-[13px] tracking-wide text-neutral-500 hover:text-black transition-colors duration-200"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
+            <span className="font-mono text-[11px] tracking-wider">RETURN</span>
+          </Link>
+        </div>
+      </div>
+
       {/* Hero Section */}
-      <section className="border-b border-[#E6E8EA]">
-        <div className="max-w-7xl mx-auto px-6 py-32">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-8 border border-[#E6E8EA]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043]"></span>
-            AUTOFLOW / LEGAL
+      <section className="relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-8 pt-24 pb-20">
+          <div className="flex flex-col gap-16">
+            {/* Hero Content */}
+            <div className="max-w-4xl">
+              <div className="flex items-center gap-3 mb-12">
+                <div className="w-8 h-px bg-black/20"></div>
+                <span className="text-[11px] tracking-[0.2em] font-mono text-neutral-400 uppercase">
+                  Legal Framework
+                </span>
+              </div>
+
+              <h1 className="text-7xl md:text-8xl lg:text-9xl font-light tracking-tighter leading-[0.95] text-black mb-8">
+                Terms of
+                <br />
+                <span className="font-medium">Service</span>
+              </h1>
+
+              <div className="flex flex-wrap gap-8 text-sm text-neutral-500 border-t border-black/10 pt-8">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono tracking-wider">
+                    VERSION
+                  </span>
+                  <span className="font-mono text-black">1.0.0</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono tracking-wider">
+                    EFFECTIVE
+                  </span>
+                  <span className="font-mono text-black">JAN 2026</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono tracking-wider">
+                    LAST UPDATED
+                  </span>
+                  <span className="font-mono text-black">JAN 2026</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Stat Summary */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-black/5">
+              <div className="bg-white p-8">
+                <div className="text-3xl font-light text-black mb-2">13</div>
+                <div className="text-[11px] font-mono tracking-wider text-neutral-400 uppercase">
+                  Articles
+                </div>
+              </div>
+              <div className="bg-white p-8">
+                <div className="text-3xl font-light text-black mb-2">
+                  ~2,500
+                </div>
+                <div className="text-[11px] font-mono tracking-wider text-neutral-400 uppercase">
+                  Words
+                </div>
+              </div>
+              <div className="bg-white p-8">
+                <div className="text-3xl font-light text-black mb-2">5 min</div>
+                <div className="text-[11px] font-mono tracking-wider text-neutral-400 uppercase">
+                  Read time
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
+      </section>
 
-          <div className="max-w-4xl">
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[1.1]">
-              terms_of_service
-              <br />
-              <span className="text-[#1E2A3A] border-b-4 border-[#FFC043] inline-block mt-2">
-                v1.0
-              </span>
-            </h1>
-
-            <div className="mt-8 space-y-2">
-              <p className="text-sm font-mono text-[#687076]">
-                effective_date: January 1, 2026
-              </p>
-              <p className="text-lg text-[#687076] font-mono leading-relaxed max-w-2xl">
-                These Terms of Service govern access to and use of the AutoFlow
-                platform, products, and services.
-              </p>
+      {/* Introduction Quote */}
+      <section className="border-t border-black/5">
+        <div className="max-w-7xl mx-auto px-8 py-24">
+          <div className="max-w-3xl">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-black/5 flex items-center justify-center">
+                  <Scale className="w-5 h-5 text-black/40" />
+                </div>
+              </div>
+              <div>
+                <p className="text-xl md:text-2xl leading-relaxed text-neutral-600 font-light italic">
+                  &ldquo;These Terms govern access to and use of the AutoFlow
+                  platform, products, and services. By using AutoFlow, you enter
+                  into a binding agreement with us.&rdquo;
+                </p>
+                <div className="mt-6 flex items-center gap-2">
+                  <div className="h-px w-8 bg-black/20"></div>
+                  <span className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase">
+                    Binding Agreement
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Content Sections */}
-      <section className="max-w-7xl mx-auto px-6 py-24">
-        <div className="max-w-3xl">
-          <div className="space-y-16">
-            {sections.map((section, idx) => (
-              <div
-                key={section.title}
-                className="scroll-mt-24"
-                id={section.title}
-              >
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-xs font-mono text-[#FFC043] font-bold">
-                    {(idx + 1).toString().padStart(2, "0")}
+      <section className="border-t border-black/5 bg-neutral-50/30">
+        <div className="max-w-7xl mx-auto px-8 py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+            {/* Sidebar Navigation */}
+            <div className="lg:col-span-3">
+              <div className="sticky top-24">
+                <div className="mb-8">
+                  <span className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase block mb-4">
+                    Contents
                   </span>
-                  <h2 className="text-xl md:text-2xl font-mono font-semibold text-[#11181C]">
-                    {section.title}()
-                  </h2>
+                  <div className="w-12 h-px bg-black/20"></div>
                 </div>
-
-                <div className="space-y-4 ml-6 border-l-2 border-[#E6E8EA] pl-6">
-                  {section.content.map((paragraph, index) => (
-                    <p
-                      key={index}
-                      className="text-sm font-mono text-[#687076] leading-relaxed"
+                <nav className="space-y-1">
+                  {sections.map((section, idx) => (
+                    <a
+                      key={section.title}
+                      href={`#${section.title}`}
+                      className="block py-2 text-[13px] text-neutral-500 hover:text-black transition-colors duration-200 font-mono tracking-wide"
                     >
-                      {paragraph}
-                    </p>
+                      {idx + 1}. {section.title.replace(/_/g, " ")}
+                    </a>
                   ))}
-                </div>
+                </nav>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Footer Note */}
-        <div className="max-w-3xl mt-20 pt-8 border-t border-[#E6E8EA]">
-          <div className="flex items-center gap-2 text-xs font-mono text-[#687076]">
-            <span className="text-[#FFC043]">→</span>
-            <span>questions@legal@autoflow.com</span>
-          </div>
-          <div className="flex items-center gap-2 mt-2 text-xs font-mono text-[#687076]">
-            <span className="text-[#FFC043]">$</span>
-            <span>autoflow --terms-of-service --version 1.0</span>
+            {/* Main Content */}
+            <div className="lg:col-span-9">
+              <div className="space-y-20">
+                {sections.map((section, idx) => (
+                  <article
+                    key={section.title}
+                    id={section.title}
+                    className="scroll-mt-24"
+                  >
+                    <div className="mb-8">
+                      <div className="flex items-center gap-4 mb-4">
+                        <span className="text-4xl font-light text-black/20 tabular-nums">
+                          {String(idx + 1).padStart(2, "0")}
+                        </span>
+                        <div className="h-px flex-1 bg-black/10"></div>
+                      </div>
+                      <h2 className="text-2xl md:text-3xl font-medium tracking-tight text-black mb-3">
+                        {section.title.replace(/_/g, " ")}
+                      </h2>
+                      <div className="w-16 h-px bg-black/30"></div>
+                    </div>
+
+                    <div className="space-y-5 pl-4 md:pl-8">
+                      {section.content.map((paragraph, index) => (
+                        <p
+                          key={index}
+                          className="text-base leading-relaxed text-neutral-600"
+                        >
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Closing Statement */}
-      <section className="border-t border-[#E6E8EA]">
-        <div className="max-w-7xl mx-auto px-6 py-24">
-          <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#F8F9FA] text-[#1E2A3A] text-xs font-mono mb-8 border border-[#E6E8EA]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043]"></span>
-              CORE_PROMISE
+      {/* CTA Section */}
+      <section className="border-t border-black/5 bg-black">
+        <div className="max-w-7xl mx-auto px-8 py-32">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm mb-8">
+              <Shield className="w-3 h-3 text-white/40" />
+              <span className="text-[10px] tracking-[0.2em] font-mono text-white/60 uppercase">
+                Questions & Contact
+              </span>
             </div>
-            <p className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter leading-[1.2] text-[#11181C]">
-              Our goal is to provide reliable automation infrastructure while
-              maintaining transparency, security, and responsible use.
+            <h3 className="text-3xl md:text-4xl lg:text-5xl font-light tracking-tight text-white mb-6">
+              Need clarification on our terms?
+            </h3>
+            <p className="text-white/60 text-base leading-relaxed mb-12 max-w-xl mx-auto">
+              Our legal team is available to answer any questions about these
+              Terms of Service or your specific use case.
             </p>
-            <div className="mt-6 flex items-center gap-2 text-sm font-mono text-[#687076]">
-              <span className="text-[#FFC043]">$</span>
-              <span>autoflow --core-values</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FFC043] animate-pulse"></span>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href="mailto:legal@autoflow.com"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black text-sm font-mono tracking-wide hover:bg-neutral-100 transition-colors duration-200"
+              >
+                <span>legal@autoflow.com</span>
+              </a>
+              <a
+                href="/public/privacy"
+                className="inline-flex items-center gap-2 px-8 py-4 border border-white/20 text-white/80 text-sm font-mono tracking-wide hover:bg-white/5 transition-colors duration-200"
+              >
+                <span>Privacy Policy</span>
+              </a>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="border-t border-black/5 bg-neutral-50/30">
+        <div className="max-w-7xl mx-auto px-8 py-12">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-4 text-[11px] font-mono tracking-wider text-neutral-400">
+              <span>© 2026 AutoFlow</span>
+              <span className="w-px h-3 bg-black/20"></span>
+              <span>All rights reserved</span>
+            </div>
+            <div className="flex items-center gap-6">
+              <a
+                href="/public/about"
+                className="text-[11px] font-mono tracking-wider text-neutral-500 hover:text-black transition-colors"
+              >
+                ABOUT
+              </a>
+              <a
+                href="/public/privacy"
+                className="text-[11px] font-mono tracking-wider text-neutral-500 hover:text-black transition-colors"
+              >
+                PRIVACY
+              </a>
+              <a
+                href="/public/contact"
+                className="text-[11px] font-mono tracking-wider text-neutral-500 hover:text-black transition-colors"
+              >
+                CONTACT
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
